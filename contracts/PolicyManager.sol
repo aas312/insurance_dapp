@@ -85,18 +85,4 @@ contract PolicyManager {
 		stopped = false;
 		emit contractRestarted();
 	}
-	
-	function getBalance()
-	    public
-	    view
-	    returns (uint256) 
-	{
-        return address(this).balance;
-    }
-    
-    function ()
-      public
-      payable 
-    {
-    }
 }

@@ -20,7 +20,8 @@ contract Policy {
 	struct PolicyInstance {
 		uint startDate;
 		uint endDate;
-		uint[] claimIds;
+		uint claimCount;
+		mapping (uint => uint) claims;
 	}
 	mapping (address => PolicyInstance) public policyHolders;
 
@@ -45,6 +46,7 @@ contract Policy {
 	event ClaimDenied(address indexed policyHolder, uint indexed claimId);
 	event contractStopped();
 	event contractRestarted();
+	event ReceivedFunds(address indexed funder, uint amount);
 
 	//modifiers
 	// Emergency Stop
@@ -95,7 +97,7 @@ contract Policy {
 	{
 		policyHolders[msg.sender].startDate = now;
 		policyHolders[msg.sender].endDate = SafeMath.add(now, coveragePeriod);
-		//policyHolders[msg.sender].claimIds = new uint[](0);
+		emit AddPolicyHolder(msg.sender);
 	}
 
 	function createClaim (uint _amount, string _reason)
@@ -110,10 +112,9 @@ contract Policy {
 	    claims[_claimId].amount = _amount;
 	    claims[_claimId].policyHolder = msg.sender;
 	    claims[_claimId].reason = _reason;
-
-        policyHolders[msg.sender].claimIds.push(_claimId);
-
-        emit ClaimSubmit(msg.sender, _claimId);
+	    policyHolders[msg.sender].claimCount++;
+	    policyHolders[msg.sender].claims[policyHolders[msg.sender].claimCount] = _claimId;
+      emit ClaimSubmit(msg.sender, _claimId);
 	}
 
 	function payClaim (uint _claimId)
@@ -168,6 +169,14 @@ contract Policy {
       public
       payable 
     {
+      emit ReceivedFunds(msg.sender, msg.value);
     }
-    
+ 
+ 		function fetchPolicyHolderClaimId (address _address, uint _holderClaimId)
+ 			public
+ 			view
+ 			returns (uint _claimId)
+ 		{
+ 			_claimId = policyHolders[_address].claims[_holderClaimId];
+ 		}    
 }
