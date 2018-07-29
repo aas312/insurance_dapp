@@ -71,3 +71,6 @@ typings/
 
 # Serverless directories
 .serverless
+
+#Depoly mnemonic.key
+deploy_mnemonic.key
