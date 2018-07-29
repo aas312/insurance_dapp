@@ -7,7 +7,6 @@ contract Policy {
 	//using SafeMath for uint;	
 
 	address public policyManager;
-
 	uint public price;
 	uint public maxClaim;
 	string public coverageTerms;
@@ -20,8 +19,7 @@ contract Policy {
 	struct PolicyInstance {
 		uint startDate;
 		uint endDate;
-		uint claimCount;
-		mapping (uint => uint) claims;
+		uint[] claimIds;
 	}
 	mapping (address => PolicyInstance) public policyHolders;
 
@@ -72,9 +70,7 @@ contract Policy {
     msg.sender.transfer(amountToRefund);
   }
 
-
 	modifier fundsAvailable (uint _claimId) {require (claims[_claimId].amount <= address(this).balance, "fundsAvailable"); _;}
-
 
 	constructor(uint _price, uint _coveragePeriod, uint _maxClaim, string _coverageTerms, address _policyManager) 
 	  public
@@ -112,8 +108,7 @@ contract Policy {
 	    claims[_claimId].amount = _amount;
 	    claims[_claimId].policyHolder = msg.sender;
 	    claims[_claimId].reason = _reason;
-	    policyHolders[msg.sender].claimCount++;
-	    policyHolders[msg.sender].claims[policyHolders[msg.sender].claimCount] = _claimId;
+	    policyHolders[msg.sender].claimIds.push(claimCount);
       emit ClaimSubmit(msg.sender, _claimId);
 	}
 
@@ -172,11 +167,42 @@ contract Policy {
       emit ReceivedFunds(msg.sender, msg.value);
     }
  
- 		function fetchPolicyHolderClaimId (address _address, uint _holderClaimId)
- 			public
- 			view
- 			returns (uint _claimId)
- 		{
- 			_claimId = policyHolders[_address].claims[_holderClaimId];
- 		}    
+	function fetchPolicyHolderClaimId (address _address, uint _holderClaimId)
+		public
+		view
+		returns (uint _claimId)
+	{
+		_claimId = policyHolders[_address].claimIds[_holderClaimId];
+	}    
+
+	function fetchPolicyHolderClaimsIds (address _address)
+		public
+		view
+		returns (uint[] _claimIds)
+	{
+		_claimIds = policyHolders[_address].claimIds;
+	}    
+
+	function getPolicyInfo () 
+		public
+		view
+		returns (address _policyManager, uint _price, uint _maxClaim, string _coverageTerms)
+	{
+		_policyManager = policyManager;
+		_price = price;
+		_maxClaim = maxClaim;
+		_coverageTerms = coverageTerms;
+
+		return (_policyManager, _price, _maxClaim, _coverageTerms);
+	}
+
+	function getPolicyTime ()
+		public
+		view
+		returns (uint _now)
+	{
+		_now = now;
+		return _now;
+	}    
+
 }

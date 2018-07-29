@@ -10,19 +10,13 @@ contract PolicyManager {
 	// List of policy managers
 	mapping (address => bool) public policyManagers;
 
-
 	// Circuit Breaker
 	bool public stopped = false;
-
 
 	// List of policies mapped to a policy manager;
 	mapping (address => address[]) public policiesByManager;
 	// All Policy Catalog
 	address[] public allPolicies;
-
-
-
-	enum CoverageOptions {OneMin, FiveMin, OneHour, OneDay, OneWeek, OneMonth, SixMonth, OneYear}
 
 	//modifiers
 	modifier stopInEmergency { require(!stopped, "stopInEmergency"); _; }
@@ -68,6 +62,23 @@ contract PolicyManager {
 		emit AddPolicy(address(newPolicy));
 		
 		return address(newPolicy);
+	}
+
+	function getAllPoliciesCount ()
+		public
+		view
+		returns (uint)
+	{
+		return allPolicies.length;
+
+	}
+
+	function getAllPolicies ()
+		public
+		view
+		returns (address[])
+	{
+		return allPolicies;
 	}
 
 	function stopContract ()
