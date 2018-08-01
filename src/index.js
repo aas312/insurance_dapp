@@ -6,7 +6,7 @@ import { DrizzleProvider } from 'drizzle-react'
 
 // Layouts
 import App from './App'
-import PolicyManager from './layouts/policyManager/containers/PolicyManager'
+import PolicyManager from './containers/PolicyManager'
 import { LoadingContainer } from 'drizzle-react-components'
 
 import store from './store'
