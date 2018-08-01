@@ -1,7 +1,7 @@
 import { drizzleConnect } from 'drizzle-react'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import PolicyInterface from './../../build/contracts/Policy.json'
+import PolicyInterface from './../../../../build/contracts/Policy.json'
 
 // Components
 import { AccountData, ContractData, ContractForm } from 'drizzle-react-components'
@@ -83,7 +83,7 @@ class Policy extends Component {
     (async () => {
       this.policyBalance = await this.context.drizzle.web3.eth.getBalance(this.props.policy)
     })()
-    
+
     return(
       <div className="pure-u-1-1">
         <h2>Policy</h2>
@@ -101,7 +101,7 @@ class Policy extends Component {
             <ContractFormValue contract={this.props.policy} method="purchasePolicy" value={price}/>
             <br/>
             <PendingSpinner contract={this.props.policy} />
-          </div> 
+          </div>
         }
 
         {isPolicyHolder &&
@@ -112,14 +112,14 @@ class Policy extends Component {
             <ContractFormValue contract={this.props.policy} method="createClaim" value={0} labels={["Claim Amount", "Claim Reason"]}/>
             <br/>
             <PendingSpinner contract={this.props.policy} />
-          </div> 
+          </div>
         }
-          
+
         <HolderClaims policy={this.props.policy} claimCount={claimCount} />
         {isPolicyManager &&
           <PolicyManagerProcessClaims policy={this.props.policy} claimCount={claimCount} />
         }
-        
+
 
 
       </div>
