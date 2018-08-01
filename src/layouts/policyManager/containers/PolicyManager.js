@@ -1,7 +1,7 @@
 import { drizzleConnect } from 'drizzle-react'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import PolicyInterface from './../../build/contracts/Policy.json'
+import PolicyInterface from './../../../../build/contracts/Policy.json'
 
 // Components
 import Policy from './Policy.js'
@@ -88,7 +88,7 @@ class PolicyManager extends Component {
             <p>Fun and Fancy insurance to meet all of your needs.</p>
             <br/><br/>
           </div>
-        
+
           <div className="pure-u-1-1">
             <h2>Active Account</h2>
             <AccountData accountIndex="0" units="ether" precision="3" />
