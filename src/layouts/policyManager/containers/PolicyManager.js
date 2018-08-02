@@ -2,6 +2,7 @@ import { drizzleConnect } from 'drizzle-react'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import PolicyInterface from './../../../../build/contracts/Policy.json'
+import { UserIsAuthenticated } from './../../../util/wrappers.js'
 
 // Components
 import Policy from './Policy.js'
@@ -51,6 +52,7 @@ class PolicyManager extends Component {
   	let currentAddress = this.props.accounts[0]
   	let isAdmin = false
   	let policyList
+
 
     if((this.keys.isPolicyManager in this.props.PolicyManager.policyManagers)) {
     	isPolicyManager = this.props.PolicyManager.policyManagers[this.keys.isPolicyManager].value
@@ -117,6 +119,7 @@ PolicyManager.contextTypes = {
 
 
 const mapStateToProps = state => {
+
   return {
     accounts: state.accounts,
     PolicyManager: state.contracts.PolicyManager,
@@ -128,4 +131,4 @@ const mapStateToProps = state => {
 
 
 
-export default drizzleConnect(PolicyManager, mapStateToProps);
+export default UserIsAuthenticated(drizzleConnect(PolicyManager, mapStateToProps));

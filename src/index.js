@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
 import { DrizzleProvider } from 'drizzle-react'
+import { Provider } from 'react-redux'
 
 // Layouts
 import App from './App'
@@ -16,7 +17,8 @@ import drizzleOptions from './drizzleOptions'
 const history = syncHistoryWithStore(browserHistory, store)
 
 ReactDOM.render((
-    <DrizzleProvider options={drizzleOptions} store={store}>
+    <DrizzleProvider options={drizzleOptions}>
+      <Provider store={store}>
       <LoadingContainer>
         <Router history={history}>
           <Route path="/" component={App}>
@@ -24,6 +26,7 @@ ReactDOM.render((
           </Route>
         </Router>
       </LoadingContainer>
+      </Provider>
     </DrizzleProvider>
   ),
   document.getElementById('root')
