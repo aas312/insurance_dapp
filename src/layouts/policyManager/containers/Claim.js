@@ -2,11 +2,6 @@ import { drizzleConnect } from 'drizzle-react'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-// Components
-import { AccountData, ContractData, ContractForm } from 'drizzle-react-components'
-import ContractFormValue from './ContractFormValue.js'
-import PendingSpinner from './../components/PendingSpinner.js'
-
 /*
  * Create component.
  */
@@ -50,7 +45,7 @@ class Claim extends Component {
         <p>Status: {statusOptions[claim.status]}</p>
         <p>Amount: {claim.amount}</p>
         <p>Reason: {claim.reason}</p>
-        {claim.policyHolder != this.props.accounts[0] &&
+        {claim.policyHolder !== this.props.accounts[0] &&
           <p>Policy Holder: {claim.policyHolder}</p>
         }
 

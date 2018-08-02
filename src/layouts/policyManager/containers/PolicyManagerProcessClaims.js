@@ -3,7 +3,6 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 // Components
-import { AccountData, ContractData, ContractForm } from 'drizzle-react-components'
 import ContractFormValue from './ContractFormValue.js'
 import PendingSpinner from './../components/PendingSpinner.js'
 import Claim from './Claim.js'
@@ -18,7 +17,7 @@ class PolicyManagerProcessClaims extends Component {
 
     this.contracts = context.drizzle.contracts
 
-    this.keys = {}    
+    this.keys = {}
 
   }
 
@@ -34,7 +33,7 @@ class PolicyManagerProcessClaims extends Component {
 
   render() {
 
-    if (this.props.claimCount == 0) {
+    if (this.props.claimCount === 0) {
       return null
     }
 
