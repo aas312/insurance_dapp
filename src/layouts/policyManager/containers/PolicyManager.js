@@ -60,6 +60,7 @@ class PolicyManager extends Component {
 
     if((this.keys.policies in this.props.PolicyManager.getAllPolicies)) {
     	policies = this.props.PolicyManager.getAllPolicies[this.keys.policies].value
+      console.log(policies)
     	policyList = policies.map((policy) => <Policy key={policy} policy={policy} />)
 		}
 
@@ -117,7 +118,6 @@ PolicyManager.contextTypes = {
   drizzle: PropTypes.object
 }
 
-
 const mapStateToProps = state => {
 
   return {
@@ -129,6 +129,4 @@ const mapStateToProps = state => {
   }
 }
 
-
-
-export default UserIsAuthenticated(drizzleConnect(PolicyManager, mapStateToProps));
+export default drizzleConnect(PolicyManager, mapStateToProps);

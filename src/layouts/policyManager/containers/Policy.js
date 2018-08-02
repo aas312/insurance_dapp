@@ -18,6 +18,8 @@ class Policy extends Component {
   constructor(props, context) {
     super(props)
 
+    console.log(this.props)
+
     this.contracts = context.drizzle.contracts
 
     this.keys = {}

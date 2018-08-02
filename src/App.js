@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { UserIsAuthenticated, UserIsNotAuthenticated } from './util/wrappers.js'
-
+import { drizzleConnect } from 'drizzle-react'
+import PropTypes from 'prop-types'
+import PolicyInterface from './../build/contracts/Policy.json'
 import { Link } from 'react-router'
 
 import LoginButtonContainer from './user/ui/loginbutton/LoginButtonContainer'
@@ -12,36 +13,75 @@ import './css/open-sans.css'
 import './css/pure-min.css'
 import './App.css'
 
-    const OnlyAuthLinks = UserIsAuthenticated(() =>
-      <span>
-        <LogoutButtonContainer />
-      </span>
-    )
-
-    const OnlyGuestLinks = UserIsNotAuthenticated(() =>
-      <span>
-        <LoginButtonContainer />
-      </span>
-    )
 
 
 class App extends Component {
+
+  constructor(props, context) {
+    super(props)
+
+    this.keys = {}
+    this.contracts = context.drizzle.contracts
+
+
+  }
+
+
+  componentWillMount() {
+
+  (async () => {
+    let policies = await this.contracts.PolicyManager.methods.getAllPolicies().call()
+    for (let policy of policies) {
+        var contractConfig = {
+        contractName: policy,
+        web3Contract: new this.context.drizzle.web3.eth.Contract(PolicyInterface.abi, policy)
+      }
+
+      this.context.drizzle.addContract(contractConfig)
+    }
+  })()
+
+}
+
   render() {
 
+    let userButton
+    let isLoggedIn = (this.props.user.data == null ? false : true)
+
+    if (!isLoggedIn) {
+      userButton = <LoginButtonContainer />
+    } else {
+      userButton = <LogoutButtonContainer />
+    }
 
     return (
       <div className="App">
         <nav className="navbar pure-menu pure-menu-horizontal">
           <ul className="pure-menu-list navbar-right">
-            <OnlyGuestLinks />
-            <OnlyAuthLinks />
+            <span>
+              {userButton}
+            </span>
           </ul>
         </nav>
 
-        {this.props.children}
+        {isLoggedIn && this.props.children}
       </div>
     );
   }
 }
 
-export default App
+App.contextTypes = {
+  drizzle: PropTypes.object
+}
+
+const mapStateToProps = state => {
+
+  return {
+    user: state.user,
+    contracts: state.contracts
+  }
+}
+
+
+
+export default drizzleConnect(App, mapStateToProps);

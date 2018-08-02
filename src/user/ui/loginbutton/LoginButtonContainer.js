@@ -1,4 +1,4 @@
-import { connect } from 'react-redux'
+import { drizzleConnect } from 'drizzle-react'
 import LoginButton from './LoginButton'
 import { loginUser } from './LoginButtonActions'
 
@@ -16,9 +16,9 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-const LoginButtonContainer = connect(
+const LoginButtonContainer = drizzleConnect(LoginButton,
   mapStateToProps,
   mapDispatchToProps
-)(LoginButton)
+)
 
 export default LoginButtonContainer

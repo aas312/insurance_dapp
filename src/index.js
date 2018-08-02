@@ -17,8 +17,7 @@ import drizzleOptions from './drizzleOptions'
 const history = syncHistoryWithStore(browserHistory, store)
 
 ReactDOM.render((
-    <DrizzleProvider options={drizzleOptions}>
-      <Provider store={store}>
+    <DrizzleProvider options={drizzleOptions} store={store} >
       <LoadingContainer>
         <Router history={history}>
           <Route path="/" component={App}>
@@ -26,7 +25,6 @@ ReactDOM.render((
           </Route>
         </Router>
       </LoadingContainer>
-      </Provider>
     </DrizzleProvider>
   ),
   document.getElementById('root')
