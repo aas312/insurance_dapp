@@ -25,6 +25,8 @@ class PolicyManager extends Component {
 
     this.keys.policies = this.contracts.PolicyManager.methods.getAllPolicies.cacheCall()
 
+
+
   }
 
 
@@ -95,6 +97,7 @@ class PolicyManager extends Component {
           <div className="pure-u-1-1">
             <h2>Active Account</h2>
             <AccountData accountIndex="0" units="ether" precision="3" />
+            <p>Remember to reload the browser whenever changing accounts.</p>
             <br/><br/>
           </div>
 

@@ -57,8 +57,8 @@ function accountChange() {
   currentValue = store.getState().accounts[0]
 
   if (typeof previousValue !== undefined && typeof currentValue !== undefined && previousValue !== currentValue) {
-    window.location.reload();
-
+    //window.location.reload();
+    //alert("Remember to reload the browser whenever changing accounts.")
     console.log(
       'Account changed from',
       previousValue,
@@ -72,7 +72,6 @@ store.subscribe(accountChange)
 store.subscribe(() => {
   saveState({
     user: store.getState().user,
-    accounts: store.getState().accounts
   });
 });
 
