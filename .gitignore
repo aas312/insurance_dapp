@@ -74,3 +74,6 @@ typings/
 
 #Depoly mnemonic.key
 deploy_mnemonic.key
+
+#Contract build directory
+build/
