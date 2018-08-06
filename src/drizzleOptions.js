@@ -1,4 +1,5 @@
 import PolicyManager from './../build/contracts/PolicyManager.json'
+import Registry from './../build/contracts/Registry.json'
 
 const drizzleOptions = {
   web3: {
@@ -9,7 +10,8 @@ const drizzleOptions = {
     }
   },
   contracts: [
-    PolicyManager
+    PolicyManager,
+    Registry
   ],
   events: {
     PolicyManager: ['AddPolicy']

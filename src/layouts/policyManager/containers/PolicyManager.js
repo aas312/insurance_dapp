@@ -26,6 +26,9 @@ class PolicyManager extends Component {
     this.keys.policies = this.contracts.PolicyManager.methods.getAllPolicies.cacheCall()
 
 
+    this.keys.policyManagerContract = this.contracts.Registry.methods.getBackendContract.cacheCall()
+
+
 
   }
 
@@ -62,7 +65,6 @@ class PolicyManager extends Component {
 
     if((this.keys.policies in this.props.PolicyManager.getAllPolicies)) {
     	policies = this.props.PolicyManager.getAllPolicies[this.keys.policies].value
-      console.log(policies)
     	policyList = policies.map((policy) => <Policy key={policy} policy={policy} />)
 		}
 
@@ -112,6 +114,14 @@ class PolicyManager extends Component {
             <br/><br/>
           </div>
 
+          {this.keys.policyManagerContract in this.props.Registry.getBackendContract &&
+            <div className="pure-u-1-1">
+              <h2>PolicyManager address in Registry contract</h2>
+              <p>{this.props.Registry.getBackendContract[this.keys.policyManagerContract].value}</p>
+              <br/><br/>
+            </div>
+          }
+
           {isAdmin &&
           	<AddPolicyManager />
           }
@@ -137,6 +147,7 @@ const mapStateToProps = state => {
   return {
     accounts: state.accounts,
     PolicyManager: state.contracts.PolicyManager,
+    Registry: state.contracts.Registry,
     contracts: state.contracts,
     drizzleStatus: state.drizzleStatus,
     transactions: state.transactions,
