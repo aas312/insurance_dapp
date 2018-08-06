@@ -95,6 +95,17 @@ class PolicyManager extends Component {
           </div>
 
           <div className="pure-u-1-1">
+            <h2>Uport User Data</h2>
+            {typeof this.props.user.data.name !== 'undefined' &&
+              <p>Name: {this.props.user.data.name}</p>
+            }
+            {typeof this.props.user.data.country !== 'undefined' &&
+              <p>Country: {this.props.user.data.country}</p>
+            }
+            <br/><br/>
+          </div>
+
+          <div className="pure-u-1-1">
             <h2>Active Account</h2>
             <AccountData accountIndex="0" units="ether" precision="3" />
             <p>Remember to reload the browser whenever changing accounts.</p>
@@ -128,7 +139,8 @@ const mapStateToProps = state => {
     PolicyManager: state.contracts.PolicyManager,
     contracts: state.contracts,
     drizzleStatus: state.drizzleStatus,
-    transactions: state.transactions
+    transactions: state.transactions,
+    user: state.user
   }
 }
 
