@@ -19,11 +19,7 @@ const history = syncHistoryWithStore(browserHistory, store)
 ReactDOM.render((
     <DrizzleProvider options={drizzleOptions} store={store} >
       <LoadingContainer>
-        <Router history={history}>
-          <Route path="/" component={App}>
-            <IndexRoute component={PolicyManager} />
-          </Route>
-        </Router>
+       <App/>
       </LoadingContainer>
     </DrizzleProvider>
   ),

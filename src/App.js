@@ -6,10 +6,9 @@ import { Link } from 'react-router'
 
 import LoginButtonContainer from './user/ui/loginbutton/LoginButtonContainer'
 import LogoutButtonContainer from './user/ui/logoutbutton/LogoutButtonContainer'
+import PolicyManager from './layouts/policyManager/containers/PolicyManager'
 
 // Styles
-import './css/oswald.css'
-import './css/open-sans.css'
 import './css/pure-min.css'
 import './App.css'
 
@@ -64,7 +63,7 @@ class App extends Component {
           </ul>
         </nav>
 
-        {isLoggedIn && this.props.children}
+        {isLoggedIn && <PolicyManager/>}
       </div>
     );
   }
