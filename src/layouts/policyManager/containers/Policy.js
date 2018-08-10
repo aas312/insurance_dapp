@@ -18,8 +18,6 @@ class Policy extends Component {
   constructor(props, context) {
     super(props)
 
-    console.log(this.props)
-
     this.contracts = context.drizzle.contracts
 
     this.keys = {}
@@ -44,6 +42,8 @@ class Policy extends Component {
     let policyCurrentTime
     let holderClaimIds
     let claimCount
+    let coverageTermsHash
+    let name
 
     if((this.keys.getPolicyInfo in this.props.contracts[this.props.policy].getPolicyInfo)) {
       policyInfo = this.props.contracts[this.props.policy].getPolicyInfo[this.keys.getPolicyInfo].value
@@ -53,6 +53,8 @@ class Policy extends Component {
       maxClaim = policyInfo._maxClaim
       coverageTerms = policyInfo._coverageTerms
       isPolicyManager = (policyManager === this.props.accounts[0]) ? true : false
+      coverageTermsHash = policyInfo._coverageTermsHash
+      name = policyInfo._name
     }
 
     if((this.keys.getPolicyTime in this.props.contracts[this.props.policy].getPolicyTime)) {
@@ -88,13 +90,16 @@ class Policy extends Component {
 
     return(
       <div className="pure-u-1-1">
-        <h2>Policy</h2>
+        <h2>Policy: {name}</h2>
         <p>Policy Manager: {policyManager} </p>
         <p>Price: {price} </p>
         <p>Coverage Period: {coveragePeriod} </p>
         <p>Max Claim: {maxClaim} </p>
         <p>Coverage Terms: {coverageTerms} </p>
         <p>Policy Contract Balance: {this.policyBalance}</p>
+        {coverageTermsHash &&
+          <p>View terms and conditions: <a target="_blank" href={'https://ipfs.io/ipfs/' + coverageTermsHash}>Terms and Conditions</a></p>
+        }
 
         {!isPolicyHolder && !isPolicyManager &&
           <div>

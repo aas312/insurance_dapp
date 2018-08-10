@@ -5,7 +5,7 @@ import "./Policy.sol";
 contract PolicyManager {
 
 	// creator of contract
-	address public admin;  
+	address public admin;
 
 	// List of policy managers
 	mapping (address => bool) public policyManagers;
@@ -40,14 +40,14 @@ contract PolicyManager {
 		public
 		onlyAdmin
 		stopInEmergency
-		returns(bool) 
+		returns(bool)
 	{
 		policyManagers[_address] = true;
 		emit AddPolicyManager(_address);
 		return true;
 	}
 
-	function createPolicy(uint _price, uint _coveragePeriod, uint _maxClaim, string _coverageTerms)
+	function createPolicy(string _name, uint _price, uint _coveragePeriod, uint _maxClaim, string _coverageTerms, string _coverageTermsHash)
 		public
 		payable
 		onlyPolicyManager
@@ -55,12 +55,12 @@ contract PolicyManager {
 		returns(address)
 	{
 	    address _policyManager = msg.sender;
-		Policy newPolicy = new Policy(_price, _coveragePeriod, _maxClaim, _coverageTerms, _policyManager);
+		Policy newPolicy = new Policy(_name, _price, _coveragePeriod, _maxClaim, _coverageTerms, _coverageTermsHash, _policyManager);
 		policiesByManager[msg.sender].push(address(newPolicy));
 		allPolicies.push(address(newPolicy));
-		
+
 		emit AddPolicy(address(newPolicy));
-		
+
 		return address(newPolicy);
 	}
 

@@ -1,7 +1,7 @@
 import React from 'react'
 
 //Components
-import { ContractForm } from 'drizzle-react-components'
+import CreatePolicyForm from '../containers/CreatePolicyForm.js'
 import PendingSpinner from './PendingSpinner.js'
 
 function CreatePolicy(props) {
@@ -9,7 +9,7 @@ function CreatePolicy(props) {
   return (
 	  <div className="pure-u-1-1">
 	    <h2>Add Policy</h2>
-	    <ContractForm contract="PolicyManager" method="createPolicy" labels={["Price", "Coverage Period", "Max Claim", "Terms"]}/>
+	    <CreatePolicyForm contract="PolicyManager" method="createPolicy" labels={["Name", "Price", "Coverage Period (seconds)", "Max Claim", "Terms", "IPFS Hash Terms File"]}/>
 	    <PendingSpinner contract="PolicyManager" />
 	    <br/><br/>
 	  </div>
