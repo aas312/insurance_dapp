@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "./Policy.sol";
 
@@ -30,7 +30,7 @@ contract PolicyManager {
 	event AddPolicy(address indexed policy);
 	event contractStopped();
 	event contractRestarted();
-
+	event ReceivedFunds(address indexed funder, uint amount);
 
 	constructor() public {
 		admin = msg.sender;
@@ -58,6 +58,8 @@ contract PolicyManager {
 		Policy newPolicy = new Policy(_name, _price, _coveragePeriod, _maxClaim, _coverageTerms, _coverageTermsHash, _policyManager);
 		policiesByManager[msg.sender].push(address(newPolicy));
 		allPolicies.push(address(newPolicy));
+		// Transfer value to new policy.
+		address(newPolicy).transfer(msg.value);
 
 		emit AddPolicy(address(newPolicy));
 

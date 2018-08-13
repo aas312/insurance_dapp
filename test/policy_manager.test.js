@@ -15,6 +15,9 @@ contract('PolicyManager', function(accounts) {
     const maxClaim = 500
     const coveragePeriod = 3600
     const coverageTerms = "The terms of the policy."
+    const name = "Policy Name"
+    const coverageTermsHash = "Qmcw6Gr3F3ZeFo8FQqk9VvNmAiXwjtPoLGjSCHASPn4qeT"
+    const balance = 1000000000000000000
 
     it("should add a policy manager", async() => {
         const policyManager = await PolicyManager.deployed()
@@ -45,7 +48,7 @@ contract('PolicyManager', function(accounts) {
             eventEmitted = true
         })
 
-        await policyManager.createPolicy(price, coveragePeriod, maxClaim, coverageTerms, {from: alice})
+        await policyManager.createPolicy(name, price, coveragePeriod, maxClaim, coverageTerms, coverageTermsHash, {from: alice, value: balance})
 
         const allPoliciesAddress = await policyManager.allPolicies.call(0)
         const policiesByManagerAddress = await policyManager.policiesByManager.call(alice, 0)
@@ -55,6 +58,7 @@ contract('PolicyManager', function(accounts) {
         const policyCoveragePeriod = await policy.coveragePeriod.call()
         const policyMaxClaim = await policy.maxClaim.call()
         const policyCoverageTerms = await policy.coverageTerms.call()
+        const policyBalance = await policy.getBalance.call()
 
         assert.equal(address, allPoliciesAddress, 'the name of the last added item does not match the expected value')
         assert.equal(address, policiesByManagerAddress, 'the name of the last added item does not match the expected value')
@@ -62,7 +66,9 @@ contract('PolicyManager', function(accounts) {
         assert.equal(policyCoveragePeriod.toString(10), coveragePeriod, 'the coverage period of the added policy does not match the expected value')
         assert.equal(policyMaxClaim.toString(10), maxClaim, 'the max claim of the added policy does not match the expected value')
         assert.equal(policyCoverageTerms, coverageTerms, 'the price of the added policy does not match the expected value')
+        assert.equal(policyBalance.toString(10), balance, 'the balance of the added policy does not match the expected value')
         assert.equal(eventEmitted, true, 'adding a policy should emit a AddPolicy event')
+
     })
 
     it("should stop the contract", async() => {
@@ -111,8 +117,7 @@ contract('PolicyManager', function(accounts) {
     it("should reject non policy managers adding policies.", async () => {
       const policyManager = await PolicyManager.deployed()
       await assertRevert(
-        policyManager.createPolicy(price, coveragePeriod, maxClaim, coverageTerms, {from: paul})
+        policyManager.createPolicy(name, price, coveragePeriod, maxClaim, coverageTerms, coverageTermsHash, {from: paul})
       );
     });
-    
 });
