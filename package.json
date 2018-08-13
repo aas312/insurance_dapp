@@ -56,6 +56,7 @@
     "style-loader": "0.13.1",
     "truffle-contract": "^1.1.8",
     "truffle-hdwallet-provider": "0.0.6",
+    "truffle-js-test-helper": "^1.0.4",
     "url-loader": "0.5.7",
     "webpack": "1.14.0",
     "webpack-dev-server": "1.16.2",
