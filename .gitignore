@@ -77,3 +77,6 @@ deploy_mnemonic.key
 
 #Contract build directory
 build/
+
+#App build directory
+build_webpack/
