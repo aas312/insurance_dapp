@@ -2,11 +2,10 @@ import { drizzleConnect } from 'drizzle-react'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import PolicyInterface from './../../../../build/contracts/Policy.json'
-import { UserIsAuthenticated } from './../../../util/wrappers.js'
 
 // Components
 import Policy from './Policy.js'
-import { AccountData, ContractData, ContractForm } from 'drizzle-react-components'
+import { AccountData } from 'drizzle-react-components'
 import AddPolicyManager from './../components/AddPolicyManager.js'
 import CreatePolicy from './../components/CreatePolicy.js'
 
@@ -38,7 +37,7 @@ class PolicyManager extends Component {
     (async () => {
       let policies = await this.contracts.PolicyManager.methods.getAllPolicies().call()
       for (let policy of policies) {
-          var contractConfig = {
+        var contractConfig = {
           contractName: policy,
           web3Contract: new this.context.drizzle.web3.eth.Contract(PolicyInterface.abi, policy)
         }

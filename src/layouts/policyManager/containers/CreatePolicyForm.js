@@ -35,7 +35,6 @@ class CreatePolicyForm extends Component {
         }
     }
 
-
     initialState['buffer'] = ''
     initialState['showSpinner'] = false
     this.state = initialState;
@@ -101,7 +100,7 @@ class CreatePolicyForm extends Component {
             return (<input key={input.name} type={inputType} name={input.name} value={this.state[input.name]} placeholder={inputLabel} onChange={this.handleInputChange} />)
         })}
         <p>Optionally store terms in file on IPFS.</p>
-        <input type = "file" onChange = {this.captureFile} />
+        <input type="file" onChange={this.captureFile} />
         {this.state.buffer && !this.state._coverageTermsHash &&
           <div>
             <button key="upload" className="pure-button" type="button" onClick={this.handleUpload}>Upload File to IPFS</button>

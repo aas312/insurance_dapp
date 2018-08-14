@@ -1,10 +1,8 @@
 import { drizzleConnect } from 'drizzle-react'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import PolicyInterface from './../../../../build/contracts/Policy.json'
 
 // Components
-import { AccountData, ContractData, ContractForm } from 'drizzle-react-components'
 import ContractFormValue from './ContractFormValue.js'
 import PendingSpinner from './../components/PendingSpinner.js'
 import HolderClaims from './HolderClaims.js'
@@ -40,7 +38,6 @@ class Policy extends Component {
     let policyInstance
     let isPolicyHolder
     let policyCurrentTime
-    let holderClaimIds
     let claimCount
     let coverageTermsHash
     let name

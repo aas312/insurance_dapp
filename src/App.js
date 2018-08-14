@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 import PolicyInterface from './../build/contracts/Policy.json'
-import { Link } from 'react-router'
 
 import LoginButtonContainer from './user/ui/loginbutton/LoginButtonContainer'
 import LogoutButtonContainer from './user/ui/logoutbutton/LogoutButtonContainer'
@@ -12,8 +11,6 @@ import PolicyManager from './layouts/policyManager/containers/PolicyManager'
 import './css/pure-min.css'
 import './App.css'
 
-
-
 class App extends Component {
 
   constructor(props, context) {
@@ -21,10 +18,7 @@ class App extends Component {
 
     this.keys = {}
     this.contracts = context.drizzle.contracts
-
-
   }
-
 
   componentWillMount() {
 
@@ -39,7 +33,6 @@ class App extends Component {
       this.context.drizzle.addContract(contractConfig)
     }
   })()
-
 }
 
   render() {
@@ -80,7 +73,5 @@ const mapStateToProps = state => {
     contracts: state.contracts
   }
 }
-
-
 
 export default drizzleConnect(App, mapStateToProps);

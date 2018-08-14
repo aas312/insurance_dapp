@@ -3,9 +3,6 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 // Components
-import { AccountData, ContractData, ContractForm } from 'drizzle-react-components'
-import ContractFormValue from './ContractFormValue.js'
-import PendingSpinner from './../components/PendingSpinner.js'
 import Claim from './Claim.js'
 
 /*
@@ -49,7 +46,7 @@ class HolderClaims extends Component {
 
     let claimList = holderClaimIds.map((claimId) => <Claim key={claimId} claimId={claimId} policy={this.props.policy} isPolicyManager={this.props.isPolicyManager} />)
 
-    if (holderClaimIds.length == 0) {
+    if (holderClaimIds.length === 0) {
       return null
     }
 

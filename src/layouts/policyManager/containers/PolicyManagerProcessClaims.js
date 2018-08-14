@@ -3,8 +3,6 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 // Components
-import ContractFormValue from './ContractFormValue.js'
-import PendingSpinner from './../components/PendingSpinner.js'
 import Claim from './Claim.js'
 
 /*
