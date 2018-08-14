@@ -58,7 +58,6 @@ class Claim extends Component {
       )
     }
 
-
     return(
       <div className="pure-u-1-1">
         <p>Id: {this.props.claimId}</p>
@@ -68,15 +67,15 @@ class Claim extends Component {
         {claim.policyHolder !== this.props.accounts[0] &&
           <p>Policy Holder: {claim.policyHolder}</p>
         }
-        {claim.status !== 2 && claim.status !== 3 &&
+        {claim.status !== "2" && claim.status !== "3" &&
           <form className="pure-form pure-form-stacked">
-            {this.props.isPolicyManager && claim.status === 0 &&
+            {this.props.isPolicyManager && claim.status === "0" &&
               <div>
                 <button key="approve" className="pure-button" type="button" onClick={this.handleApprove}>Approve</button>
                 <button style={{marginLeft: '20px'}} key="deny" className="pure-button" type="button" onClick={this.handleDeny}>Deny</button>
               </div>
             }
-            {!this.props.isPolicyManager && claim.status === 1 && claim.policyHolder === this.props.accounts[0] &&
+            {!this.props.isPolicyManager && claim.status === "1" && claim.policyHolder === this.props.accounts[0] &&
               <button key="collect" className="pure-button" type="button" onClick={this.handleCollect}>Collect</button>
             }
             <PendingSpinner contract={this.props.policy} />

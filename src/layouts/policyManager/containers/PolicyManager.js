@@ -2,6 +2,7 @@ import { drizzleConnect } from 'drizzle-react'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import PolicyInterface from './../../../../build/contracts/Policy.json'
+import PolicyManagerInterface from './../../../../build/contracts/PolicyManager.json'
 
 // Components
 import Policy from './Policy.js'
@@ -96,18 +97,16 @@ class PolicyManager extends Component {
           </div>
 
           <div className="pure-u-1-1">
-            <h2>Uport User Data</h2>
+            <h2>User Data</h2>
             {typeof this.props.user.data.name !== 'undefined' &&
-              <p>Name: {this.props.user.data.name}</p>
+              <p>Uport Name: {this.props.user.data.name}</p>
             }
             {typeof this.props.user.data.country !== 'undefined' &&
-              <p>Country: {this.props.user.data.country}</p>
+              <p>Uport Country: {this.props.user.data.country}</p>
             }
-            <br/><br/>
-          </div>
-
-          <div className="pure-u-1-1">
-            <h2>Active Account</h2>
+            <p>
+            Active Account
+            </p>
             <AccountData accountIndex="0" units="ether" precision="3" />
             <p>Remember to reload the browser whenever changing accounts.</p>
             <br/><br/>
@@ -150,7 +149,8 @@ const mapStateToProps = state => {
     contracts: state.contracts,
     drizzleStatus: state.drizzleStatus,
     transactions: state.transactions,
-    user: state.user
+    user: state.user,
+    web3: state.web3
   }
 }
 

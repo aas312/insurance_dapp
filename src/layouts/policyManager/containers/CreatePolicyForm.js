@@ -2,6 +2,7 @@ import { drizzleConnect } from 'drizzle-react'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ipfs from '../../../ipfs.js'
+import PolicyInterface from './../../../../build/contracts/Policy.json'
 
 /*
  * Create component.
@@ -59,14 +60,12 @@ class CreatePolicyForm extends Component {
     this.setState({ showSpinner: true });
     event.preventDefault();
     await ipfs.add(this.state.buffer, (err, ipfsHash) => {
-      console.log(err,ipfsHash);
       //setState by setting ipfsHash to ipfsHash[0].hash
       this.setState({ _coverageTermsHash:ipfsHash[0].hash, showSpinner: false });
     })
   };
 
   handleSubmit() {
-    console.log(this.state)
     this.contracts[this.props.contract].methods[this.props.method].cacheSend(this.state._name, this.state._price, this.state._coveragePeriod, this.state._maxClaim, this.state._coverageTerms, this.state._coverageTermsHash, {from: this.props.accounts[0], value: this.props.value});
   }
 

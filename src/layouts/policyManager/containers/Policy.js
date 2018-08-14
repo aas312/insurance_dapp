@@ -100,7 +100,7 @@ class Policy extends Component {
 
         {!isPolicyHolder && !isPolicyManager &&
           <div>
-            <h2>Purchase Policy</h2>
+            <h2>Purchase {name}</h2>
             <p>{price} wei plus gas will be sent to cover the cost of the policy.</p>
             <ContractFormValue contract={this.props.policy} method="purchasePolicy" value={price}/>
             <br/>
