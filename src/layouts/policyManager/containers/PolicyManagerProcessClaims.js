@@ -25,7 +25,7 @@ class PolicyManagerProcessClaims extends Component {
     let list = []
 
     for(let i = this.props.claimCount; i > 0; i--) {
-      list.push(<Claim key={i} claimId={i} policy={this.props.policy}/>)
+      list.push(<Claim key={i} claimId={i} policy={this.props.policy} isPolicyManager={this.props.isPolicyManager} />)
     }
 
     return list
@@ -40,11 +40,6 @@ class PolicyManagerProcessClaims extends Component {
     return(
       <div className="pure-u-1-1">
         <h2>Process Claims</h2>
-        <h2>Pay Claim</h2>
-        <ContractFormValue contract={this.props.policy} method="payClaim" value={0} labels={["Id"]}/>
-        <h2>Deny Claim</h2>
-        <ContractFormValue contract={this.props.policy} method="denyClaim" value={0} labels={["Id"]}/>
-        <PendingSpinner contract={this.props.policy} />
         {this.claimsList()}
       </div>
     )

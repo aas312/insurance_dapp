@@ -47,7 +47,7 @@ class HolderClaims extends Component {
       )
     }
 
-    let claimList = holderClaimIds.map((claimId) => <Claim key={claimId} claimId={claimId} policy={this.props.policy}/>)
+    let claimList = holderClaimIds.map((claimId) => <Claim key={claimId} claimId={claimId} policy={this.props.policy} isPolicyManager={this.props.isPolicyManager} />)
 
     if (holderClaimIds.length == 0) {
       return null
