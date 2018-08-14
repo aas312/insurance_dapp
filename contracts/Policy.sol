@@ -1,8 +1,15 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "./SafeMath.sol";
+import "./usingOraclize.sol";
 
-contract Policy {
+contract Policy is usingOraclize {
+
+
+
+
+
+    uint public currentTime;
 
 	//using SafeMath for uint;
 
@@ -25,9 +32,19 @@ contract Policy {
 	}
 	mapping (address => PolicyInstance) public policyHolders;
 
+	//Oraclize
+	enum OCType {PolicyPurchase, ClaimSubmit}
+	struct OraclizeCall {
+		OCType octype;
+		address policyHolder;
+		string reason;
+		uint amount;
+	}
+	mapping (bytes32 => OraclizeCall) public pendingcalls;
+
 	// Claims
 	uint public claimCount;
-	enum Status {Open, Paid, Denied}
+	enum Status {Open, Approved, Denied, Paid}
 	struct Claim {
 		Status status;
 		uint amount;
@@ -40,13 +57,18 @@ contract Policy {
 	bool public stopped = false;
 
 	//events
-	event AddPolicyHolder(address indexed policyHolder);
-	event ClaimSubmit(address indexed policyHolder, uint indexed claimId);
-	event ClaimPaid(address indexed policyHolder, uint indexed claimId);
+	event SubmitPolicyHolder(address indexed policyHolder);
+	event FinalizePolicyHolder(address indexed policyHolder);
+	event ClaimSubmit(address indexed policyHolder);
+	event ClaimFinalize(address indexed policyHolder, uint indexed claimId);
+	event ClaimApproved(address indexed policyHolder, uint indexed claimId);
 	event ClaimDenied(address indexed policyHolder, uint indexed claimId);
+	event ClaimPaid(address indexed policyHolder, uint indexed claimId);
 	event contractStopped();
 	event contractRestarted();
 	event ReceivedFunds(address indexed funder, uint amount);
+  event newOraclizeQuery(string description);
+  event newTimeMeasure(string time);
 
 	//modifiers
 	// Emergency Stop
@@ -55,7 +77,7 @@ contract Policy {
 
 	//Restrict Access
 	modifier onlyPolicyManager { require(msg.sender == policyManager, "onlyPolicyManager"); _; }
-	modifier onlyValidPolicyHolder { require(policyHolders[msg.sender].endDate > 0 && now < policyHolders[msg.sender].endDate, "onlyValidPolicyHolder"); _; }
+	modifier onlyValidPolicyHolder { require(policyHolders[msg.sender].endDate > 0, "onlyValidPolicyHolder"); _; }
     modifier notValidPolicyHolder { require(policyHolders[msg.sender].endDate == 0 || now > policyHolders[msg.sender].endDate, "notValidPolicyHolder"); _; }
 
 	//Check State
@@ -76,6 +98,7 @@ contract Policy {
 
 	constructor(string _name, uint _price, uint _coveragePeriod, uint _maxClaim, string _coverageTerms, string _coverageTermsHash, address _policyManager)
 	  public
+	  payable
 	{
 	    name = _name;
 		price = _price;
@@ -94,29 +117,36 @@ contract Policy {
 		notValidPolicyHolder
 		paidEnough
 		checkValue
+		returns(bytes32 myID)
 	{
-		policyHolders[msg.sender].startDate = now;
-		policyHolders[msg.sender].endDate = SafeMath.add(now, coveragePeriod);
-		emit AddPolicyHolder(msg.sender);
+        // Submit to Oraclize.
+		emit newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+		myID = oraclize_query("WolframAlpha", "Timestamp now");
+		// Store the date we'll need to create the policy.
+        pendingcalls[myID].octype = OCType.PolicyPurchase;
+        pendingcalls[myID].policyHolder = msg.sender;
+		emit SubmitPolicyHolder(msg.sender);
 	}
 
 	function createClaim (uint _amount, string _reason)
 		public
-		onlyValidPolicyHolder
 		validClaim(_amount)
+		onlyValidPolicyHolder
 		stopInEmergency
 	{
-	    claimCount++;
-	    uint _claimId = claimCount;
-	    claims[_claimId].status = Status.Open;
-	    claims[_claimId].amount = _amount;
-	    claims[_claimId].policyHolder = msg.sender;
-	    claims[_claimId].reason = _reason;
-	    policyHolders[msg.sender].claimIds.push(claimCount);
-      emit ClaimSubmit(msg.sender, _claimId);
+	    // Submit to Oraclize.
+		emit newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+		bytes32 myID = oraclize_query("WolframAlpha", "Timestamp now");
+		// Save out data to create claim.
+        pendingcalls[myID].octype = OCType.ClaimSubmit;
+        pendingcalls[myID].reason = _reason;
+        pendingcalls[myID].amount = _amount;
+        pendingcalls[myID].policyHolder = msg.sender;
+
+        emit ClaimSubmit(msg.sender);
 	}
 
-	function payClaim (uint _claimId)
+	function approveClaim (uint _claimId)
 		public
 		payable
 		onlyPolicyManager
@@ -126,6 +156,22 @@ contract Policy {
 		stopInEmergency
 	{
 	    claims[_claimId].policyHolder.transfer(claims[_claimId].amount);
+	    claims[_claimId].status = Status.Approved;
+	    emit ClaimApproved(claims[_claimId].policyHolder, _claimId);
+	}
+
+	function collectClaim (uint _claimId)
+		public
+		payable
+		claimExist(_claimId)
+		fundsAvailable (_claimId)
+		stopInEmergency
+	{
+			// Only the claim submitter can collect claim.
+			require(msg.sender == claims[_claimId].policyHolder, "Only the claim submitter can collect claim");
+			// Only approved claim can be collected.
+			require(claims[_claimId].status == Status.Approved, "Only approved claim can be collected");
+	    msg.sender.transfer(claims[_claimId].amount);
 	    claims[_claimId].status = Status.Paid;
 	    emit ClaimPaid(claims[_claimId].policyHolder, _claimId);
 	}
@@ -164,12 +210,12 @@ contract Policy {
         return address(this).balance;
     }
 
-    function ()
-      public
-      payable
-    {
-      emit ReceivedFunds(msg.sender, msg.value);
-    }
+  function ()
+    public
+    payable
+  {
+    emit ReceivedFunds(msg.sender, msg.value);
+  }
 
 	function fetchPolicyHolderClaimId (address _address, uint _holderClaimId)
 		public
@@ -212,4 +258,29 @@ contract Policy {
 		return _now;
 	}
 
+  function __callback(bytes32 myID, string result) public {
+    require(msg.sender == oraclize_cbAddress());
+    currentTime = parseInt(result);
+    emit newTimeMeasure(result);
+    address policyHolder = pendingcalls[myID].policyHolder;
+    // If we are doing a purchase.
+    if(pendingcalls[myID].octype == OCType.PolicyPurchase) {
+			policyHolders[policyHolder].startDate = currentTime;
+			policyHolders[policyHolder].endDate = SafeMath.add(currentTime, coveragePeriod);
+			emit FinalizePolicyHolder(policyHolder);
+    }
+    // If we are doing a claim.
+    if(pendingcalls[myID].octype == OCType.ClaimSubmit) {
+      // Require policy expired
+      require(currentTime < policyHolders[policyHolder].endDate, "Claim submitted for expired policy.");
+      claimCount++;
+	    uint _claimId = claimCount;
+	    claims[_claimId].status = Status.Open;
+	    claims[_claimId].amount = pendingcalls[myID].amount;
+	    claims[_claimId].policyHolder = policyHolder;
+	    claims[_claimId].reason = pendingcalls[myID].reason;
+	    policyHolders[policyHolder].claimIds.push(claimCount);
+	    emit ClaimFinalize(policyHolder, _claimId);
+    }
+  }
 }
