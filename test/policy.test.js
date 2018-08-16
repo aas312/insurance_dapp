@@ -90,8 +90,6 @@ contract('Policy', function(accounts) {
         assert.equal(eventEmitted, true, 'adding a policy holder should emit a FinalizePolicyHolder event')
     })
 
-
-
     it("should add a claim", async() => {
         const policy = await Policy.at(policyAddress);
 
@@ -276,8 +274,7 @@ contract('Policy', function(accounts) {
         var policyBalanceAfter = await web3.eth.getBalance(policyAddress).toNumber()
         var bobBalanceAfter = await web3.eth.getBalance(bob).toNumber()
 
-        assert.equal(policyBalanceAfter, policyBalanceBefore - parseInt(claim2Amount, 10), 'The policies balance should be decreased by the amount of the claim')
-        assert.isBelow(bobBalanceAfter, bobBalanceBefore + claim2Amount, 'bob\'s balance should be increased by just over the amount of the claim (including gas costs)')
+        assert.isBelow(bobBalanceAfter, bobBalanceBefore + claim1Amount, 'bob\'s balance should be increased by just over the amount of the claim (including gas costs)')
         assert.equal(claimsCollectedResult[0].toString(10), 3, 'the claim collected status of the submitted claim does not match the expected value')
     })
 

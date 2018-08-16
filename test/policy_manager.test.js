@@ -21,10 +21,11 @@ contract('PolicyManager', function(accounts) {
 
     it("should add a policy manager", async() => {
         const policyManager = await PolicyManager.deployed()
+        let address
 
         let eventEmitted = false
 
-        let event = policyManager.AddPolicyManager()
+        let event = policyManager.AddPolicyManagerEvent()
         await event.watch((err, res) => {
             address = res.args.policyManager
             eventEmitted = true
@@ -34,7 +35,7 @@ contract('PolicyManager', function(accounts) {
         const result = await policyManager.policyManagers.call(address)
 
         assert.equal(result, true, 'the policy manager address added is not set to true in policyManagers')
-        assert.equal(eventEmitted, true, 'adding a policy manager should emit a AddPolicyManager event')
+        assert.equal(eventEmitted, true, 'adding a policy manager should emit a AddPolicyManagerEvent event')
     })
 
     it("should add a policy", async() => {
@@ -76,7 +77,7 @@ contract('PolicyManager', function(accounts) {
 
         let eventEmitted = false
 
-        let event = policyManager.contractStopped()
+        let event = policyManager.ContractStopped()
         await event.watch((err, res) => {
             eventEmitted = true
         })
@@ -86,7 +87,7 @@ contract('PolicyManager', function(accounts) {
         const result = await policyManager.stopped.call()
 
         assert.equal(result, true, 'the value of stopped does not match the expected value')
-        assert.equal(eventEmitted, true, 'stoppiing a contract should emit a contractStopped event')
+        assert.equal(eventEmitted, true, 'stoppiing a contract should emit a ContractStopped event')
     })
 
     it("should restart the contract", async() => {
@@ -94,7 +95,7 @@ contract('PolicyManager', function(accounts) {
 
         let eventEmitted = false
 
-        let event = policyManager.contractRestarted()
+        let event = policyManager.ContractRestarted()
         await event.watch((err, res) => {
             eventEmitted = true
         })
@@ -104,7 +105,7 @@ contract('PolicyManager', function(accounts) {
         const result = await policyManager.stopped.call()
 
         assert.equal(result, false, 'the value of stopped does not match the expected value')
-        assert.equal(eventEmitted, true, 'stoppiing a contract should emit a contractStopped event')
+        assert.equal(eventEmitted, true, 'restarting a contract should emit a ContractRestarted event')
     })
 
     it("should reject non admins adding policy managers.", async () => {
