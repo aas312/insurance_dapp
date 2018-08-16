@@ -1,9 +1,12 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
+
 
 contract Registry {
-    address backendContract;
-    address[] previousBackends;
-    address owner;
+
+
+    address public backendContract;
+    address[] public previousBackends;
+    address public owner;
 
     constructor() public {
         owner = msg.sender;
@@ -15,10 +18,10 @@ contract Registry {
     }
 
     function changeBackend(address newBackend) public
-    onlyOwner()
+        onlyOwner()
     returns (bool)
     {
-        if(newBackend != backendContract) {
+        if (newBackend != backendContract) {
             previousBackends.push(backendContract);
             backendContract = newBackend;
             return true;
@@ -27,12 +30,12 @@ contract Registry {
         return false;
     }
 
-  function getBackendContract ()
-    public
-    view
-    returns (address)
-  {
-    return backendContract;
-  }
+    function getBackendContract ()
+        public
+        view
+        returns (address)
+    {
+        return backendContract;
+    }
 
 }
