@@ -112,7 +112,7 @@ contract Policy is usingOraclize {
     // Only allowed for open claim.
     modifier claimOpen(uint _claimId) {require(claims[_claimId].status == Status.Open, "claimOpen"); _;}
     // Only allow claims lower than max claim for policy.
-    modifier validClaim(uint _amount) {require(_amount < maxClaim, "validClaim"); _;}
+    modifier validClaim(uint _amount) {require(_amount < maxClaim && _amount > 0, "validClaim"); _;}
     // Verify claim exist before taking action.
     modifier claimExist(uint _claimId) {require(claims[_claimId].policyHolder != address(0), "claimExist"); _;}
 
@@ -158,20 +158,29 @@ contract Policy is usingOraclize {
         payable
     {
         require(_price > 0, "Policy price must be greater than 0"); // Revert is price is 0 or less.
-        // Revert if coverage period is 0 or less.
-        require(_coveragePeriod > 0, "Policy coverage period must be greater than 0");
+        // Revert if coverage period is 0 or less or more than 1 million years.
+        require(
+            _coveragePeriod > 0 && _coveragePeriod < 31557600000000,
+            "Policy coverage period must be greater than 0"
+        );
         require(_maxClaim > 0, "Policy max claim must be greater than 0");  // Revert is max claim is 0 or less.
         require(_policyManager != 0, "Policy Manager is required"); // Revert if no policy manager was set.
         bytes memory nameCheck = bytes(_name);
-        require(nameCheck.length > 0, "Policy name is required");   // Revert if name is not set.
-
+        // Revert if name is not set or too long.
+        require(nameCheck.length > 0 && nameCheck.length < 1000, "Policy name is not set or too long");
         name = _name;   // Set policy name in storage.
         price = _price; // Set policy price in storage.
         coveragePeriod = _coveragePeriod;   // Set coverage period in storage.
         maxClaim = _maxClaim;   // Set the max claim in storage.
+        bytes memory coverageTermsCheck = bytes(_coverageTerms);
+        // Revert if name is not set or too long.
+        require(coverageTermsCheck.length < 1000, "Policy coverage terms is too long");
         coverageTerms = _coverageTerms; // Set the coverage terms as a string in storage.
         claimCount = 0; // Initialize the claim count to 0.
         policyManager = _policyManager; // Set the policy manage in storage.
+        bytes memory coverageTermsHashCheck = bytes(_coverageTermsHash);
+        // Revert if name is not set or too long.
+        require(coverageTermsHashCheck.length < 1000, "Policy coverage terms hash is too long");
         coverageTermsHash = _coverageTermsHash; // Set the hash of the terms stored as an ipfs file.
     }
 
@@ -216,6 +225,10 @@ contract Policy is usingOraclize {
         onlyValidPolicyHolder
         stopInEmergency
     {
+        bytes memory reasonCheck = bytes(_reason);
+        // Revert if reason is not set or too long.
+        require(reasonCheck.length > 0 && reasonCheck.length < 1000, "Reason is not set or too long");
+
         // Submit to Oraclize to get the current time.
         emit NewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
         bytes32 myID = oraclize_query("WolframAlpha", "Timestamp now");
@@ -389,8 +402,12 @@ contract Policy is usingOraclize {
         require(msg.sender == oraclize_cbAddress());    // Only the oraclize callback address can use this function.
         currentTime = parseInt(result); // Set the current time from the returned result.
         emit NewTimeMeasure(result);
+        // Make sure we have a policyholder for this query.
+        require(pendingcalls[myID].policyHolder != 0, "Missing policyholder for query ID");
         // Get the policy holder stored from the stored pending calss data.
         address policyHolder = pendingcalls[myID].policyHolder;
+        // Require a valid type for our stored query.
+        require(pendingcalls[myID].octype == OCType.ClaimSubmit || pendingcalls[myID].octype == OCType.PolicyPurchase);
         // If we are doing a purchase.
         if (pendingcalls[myID].octype == OCType.PolicyPurchase) {
             // Set the start date to the return time.
@@ -407,6 +424,8 @@ contract Policy is usingOraclize {
             claimCount++;   // Increment claim count to get next claim id.
             uint _claimId = claimCount; // Next claim id.
             claims[_claimId].status = Status.Open;  // Initialize new claim status.
+            // Require a store claim amount that is valid.
+            require(pendingcalls[myID].amount < maxClaim && pendingcalls[myID].amount > 0, "validClaim");
             claims[_claimId].amount = pendingcalls[myID].amount;    // The amount of the claim.
             claims[_claimId].policyHolder = policyHolder;   // Store the policy holder who submitted the claim.
             claims[_claimId].reason = pendingcalls[myID].reason;    // Store the reason for the claim.
