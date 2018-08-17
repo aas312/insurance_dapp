@@ -32,6 +32,127 @@ contract('Policy', function(accounts) {
       policyAddress = policy.address
     });
 
+
+    it("should accept funds", async () => {
+      const policy = await Policy.at(policyAddress);
+
+      let eventEmitted = false
+      let toFund = 5000
+
+      const ReceivedFunds = policy.ReceivedFunds()
+      // create promise so Mocha waits for value to be returned
+      let checkForFunds = new Promise((resolve, reject) => {
+        // watch for our FinalizePolicyHolder event
+        ReceivedFunds.watch(async function(error, result) {
+          if (error) {
+            reject(error)
+          }
+          ReceivedFunds.stopWatching()
+          eventEmitted = true
+          resolve(result)
+        })
+      })
+
+      var bobBalanceBefore = await web3.eth.getBalance(bob).toNumber()
+      var policyBalanceBefore = await web3.eth.getBalance(policyAddress).toNumber()
+
+      await policy.sendTransaction({from: bob, value: toFund})
+      await checkForFunds
+      var policyBalanceAfter = await web3.eth.getBalance(policyAddress).toNumber()
+      var bobBalanceAfter = await web3.eth.getBalance(bob).toNumber()
+
+      assert.equal(eventEmitted, true, 'adding funds should emit a ReceivedFunds event')
+      assert.equal(policyBalanceAfter, policyBalanceBefore + parseInt(toFund, 10), 'The policies balance should be increased by the amount funded')
+      assert.isBelow(bobBalanceAfter, bobBalanceBefore - toFund, 'bob\'s balance should be reduced by more than the amount of the item (including gas costs)')
+    });
+
+    it("should withdraw funds", async () => {
+      const policy = await Policy.at(policyAddress);
+
+      let eventEmitted = false
+      let toWithdraw = 5000
+
+      const WithdrawFundsEvent = policy.WithdrawFundsEvent()
+      // create promise so Mocha waits for value to be returned
+      let checkForFunds = new Promise((resolve, reject) => {
+        // watch for our FinalizePolicyHolder event
+        WithdrawFundsEvent.watch(async function(error, result) {
+          if (error) {
+            reject(error)
+          }
+          WithdrawFundsEvent.stopWatching()
+          eventEmitted = true
+          resolve(result)
+        })
+      })
+
+      var aliceBalanceBefore = await web3.eth.getBalance(alice).toNumber()
+      var policyBalanceBefore = await web3.eth.getBalance(policyAddress).toNumber()
+
+      await policy.withdrawFunds(toWithdraw, {from: alice})
+      await checkForFunds
+      var policyBalanceAfter = await web3.eth.getBalance(policyAddress).toNumber()
+      var aliceBalanceAfter = await web3.eth.getBalance(alice).toNumber()
+
+      assert.equal(eventEmitted, true, 'adding funds should emit a WithdrawFundsEvent event')
+      assert.equal(policyBalanceAfter, policyBalanceBefore - parseInt(toWithdraw, 10), 'The policies balance should be increased by the amount funded')
+      assert.isBelow(aliceBalanceAfter, aliceBalanceBefore + toWithdraw, 'alice\'s balance should be reduced by more than the amount of the item (including gas costs)')
+    });
+
+    it("should stop the contract", async() => {
+      const policy = await Policy.at(policyAddress);
+
+      let eventEmitted = false
+
+      const ContractStopped = policy.ContractStopped()
+      // create promise so Mocha waits for value to be returned
+      let checkForStopped = new Promise((resolve, reject) => {
+        // watch for our FinalizePolicyHolder event
+        ContractStopped.watch(async function(error, result) {
+          if (error) {
+            reject(error)
+          }
+          ContractStopped.stopWatching()
+          eventEmitted = true
+          resolve(result)
+        })
+      })
+
+      await policy.stopContract({from: alice})
+      await checkForStopped
+      const result = await policy.stopped.call()
+
+      assert.equal(result, true, 'the value of stopped does not match the expected value')
+      assert.equal(eventEmitted, true, 'stoppiing a contract should emit a ContractStopped event')
+    })
+
+    it("should restart the contract", async() => {
+      const policy = await Policy.at(policyAddress);
+
+      let eventEmitted = false
+
+      const ContractRestarted = policy.ContractRestarted()
+      // create promise so Mocha waits for value to be returned
+      let checkForRestarted = new Promise((resolve, reject) => {
+        // watch for our FinalizePolicyHolder event
+        ContractRestarted.watch(async function(error, result) {
+          if (error) {
+            reject(error)
+          }
+          ContractRestarted.stopWatching()
+          eventEmitted = true
+          resolve(result)
+        })
+      })
+
+      await policy.restartContract({from: alice})
+      await checkForRestarted
+      const result = await policy.stopped.call()
+
+      assert.equal(result, false, 'the value of stopped does not match the expected value')
+      assert.equal(eventEmitted, true, 'restarting a contract should emit a ContractRestarted event')
+    })
+
     it("should have correct constructor values", async() => {
       const policy = await Policy.at(policyAddress);
 
@@ -277,37 +398,4 @@ contract('Policy', function(accounts) {
         assert.isBelow(bobBalanceAfter, bobBalanceBefore + claim1Amount, 'bob\'s balance should be increased by just over the amount of the claim (including gas costs)')
         assert.equal(claimsCollectedResult[0].toString(10), 3, 'the claim collected status of the submitted claim does not match the expected value')
     })
-
-    it("should accept funds", async () => {
-      const policy = await Policy.at(policyAddress);
-
-      let eventEmitted = false
-      let toFund = 5000
-
-        const ReceivedFunds = policy.ReceivedFunds()
-        // create promise so Mocha waits for value to be returned
-        let checkForFunds = new Promise((resolve, reject) => {
-          // watch for our FinalizePolicyHolder event
-          ReceivedFunds.watch(async function(error, result) {
-            if (error) {
-              reject(error)
-            }
-            ReceivedFunds.stopWatching()
-            eventEmitted = true
-            resolve(result)
-          })
-        })
-
-      var bobBalanceBefore = await web3.eth.getBalance(bob).toNumber()
-      var policyBalanceBefore = await web3.eth.getBalance(policyAddress).toNumber()
-
-      await policy.sendTransaction({from: bob, value: toFund})
-      await checkForFunds
-      var policyBalanceAfter = await web3.eth.getBalance(policyAddress).toNumber()
-      var bobBalanceAfter = await web3.eth.getBalance(bob).toNumber()
-
-      assert.equal(eventEmitted, true, 'adding funds should emit a ReceivedFunds event')
-      assert.equal(policyBalanceAfter, policyBalanceBefore + parseInt(toFund, 10), 'The policies balance should be increased by the amount funded')
-      assert.isBelow(bobBalanceAfter, bobBalanceBefore - toFund, 'bob\'s balance should be reduced by more than the amount of the item (including gas costs)')
-    });
 });
