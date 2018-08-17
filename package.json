@@ -1,7 +1,7 @@
 {
   "name": "insurance_dapp",
   "version": "1.0.0",
-  "description": "",
+  "description": "Insurance Marketplace Dapp",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jethr0j0nes/insurance_dapp.git"
