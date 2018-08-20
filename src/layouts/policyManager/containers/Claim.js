@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 // Components
- import PendingSpinner from './../components/PendingSpinner.js'
+import PendingSpinner from './../components/PendingSpinner.js'
 
 /*
  * Create component.
@@ -20,20 +20,48 @@ class Claim extends Component {
     this.contracts = context.drizzle.contracts
 
     this.keys = {}
-    this.keys.claims = this.contracts[this.props.policy].methods.claims.cacheCall(this.props.claimId)
+
+    var initialState = {}
+    initialState['showSpinner'] = false
+    this.state = initialState;
+
   }
 
   handleApprove() {
-    this.contracts[this.props.policy].methods.approveClaim.cacheSend(this.props.claimId, {from: this.props.accounts[0]});
+    //this.contracts[this.props.policy].methods.approveClaim.cacheSend(this.props.claimId, {from: this.props.accounts[0]});
+    (async () => {
+      let receipt = await this.contracts[this.props.policy].methods.approveClaim(this.props.claimId).send({from: this.props.accounts[0]});
+      await this.updateClaim()
+    })()
   }
 
   handleDeny() {
-    this.contracts[this.props.policy].methods.denyClaim.cacheSend(this.props.claimId, {from: this.props.accounts[0]});
+    (async () => {
+      let receipt = await this.contracts[this.props.policy].methods.denyClaim(this.props.claimId).send({from: this.props.accounts[0]})
+      await this.updateClaim()
+    })()
   }
 
   handleCollect() {
-    this.contracts[this.props.policy].methods.collectClaim.cacheSend(this.props.claimId, {from: this.props.accounts[0]});
+    (async () => {
+      let receipt = await this.contracts[this.props.policy].methods.collectClaim(this.props.claimId).send({from: this.props.accounts[0]})
+      await this.updateClaim()
+    })()
   }
+
+  componentWillMount() {
+    (async () => {
+      await this.updateClaim()
+    })()
+  }
+
+  async updateClaim() {
+
+    let gas = 50000 + Math.floor(Math.random() * 1000) + 1
+    let claim = await this.contracts[this.props.policy].methods.claims(this.props.claimId).call({gas})
+    this.setState({claim})
+  }
+
 
 
   render() {
@@ -41,9 +69,7 @@ class Claim extends Component {
     let claim
     let statusOptions = ['Open', 'Approved', 'Denied', 'Collected']
 
-    if((this.keys.claims in this.props.contracts[this.props.policy].claims)) {
-      claim = this.props.contracts[this.props.policy].claims[this.keys.claims].value
-    }
+    claim = this.state.claim
 
     // Wait for claim.
     if (typeof claim === 'undefined') {
