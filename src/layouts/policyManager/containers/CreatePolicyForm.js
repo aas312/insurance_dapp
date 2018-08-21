@@ -18,14 +18,14 @@ class CreatePolicyForm extends Component {
     this.contracts = context.drizzle.contracts;
 
     // Get the contract ABI
-    const abi = this.contracts[this.props.contract].abi;
+    const abi = this.contracts.PolicyManager.abi;
 
     this.inputs = [];
     var initialState = {};
 
     // Iterate over abi for correct function.
     for (var i = 0; i < abi.length; i++) {
-        if (abi[i].name === this.props.method) {
+        if (abi[i].name === 'createPolicy') {
             this.inputs = abi[i].inputs;
 
             for (var i = 0; i < this.inputs.length; i++) {
@@ -66,7 +66,28 @@ class CreatePolicyForm extends Component {
   };
 
   handleSubmit() {
-    this.contracts[this.props.contract].methods[this.props.method].cacheSend(this.state._name, this.state._price, this.state._coveragePeriod, this.state._maxClaim, this.state._coverageTerms, this.state._coverageTermsHash, {from: this.props.accounts[0], value: this.props.value});
+    (async () => {
+      let receipt = await this.contracts.PolicyManager.methods.createPolicy(this.state._name, this.state._price, this.state._coveragePeriod, this.state._maxClaim, this.state._coverageTerms, this.state._coverageTermsHash).send({from: this.props.accounts[0], value: this.props.value});
+      let policy = receipt.events.AddPolicy.returnValues.policy
+      var contractConfig = {
+        contractName: policy,
+        web3Contract: new this.context.drizzle.web3.eth.Contract(PolicyInterface.abi, policy)
+      }
+
+      await this.context.drizzle.addContract(contractConfig)
+      await this.props.loadPolicies()
+
+      this.setState({
+        _name: '',
+        _price: '',
+        _coveragePeriod: '',
+        _maxClaim: '',
+        _coverageTerms: '',
+        _coverageTermsHash: '',
+      })
+
+    })()
+
   }
 
   handleInputChange(event) {

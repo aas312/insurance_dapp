@@ -37,10 +37,11 @@ class ContractFormValue extends Component {
     this.state = initialState;
   }
 
-
-
   handleSubmit() {
     this.contracts[this.props.contract].methods[this.props.method].cacheSend(...Object.values(this.state), {from: this.props.accounts[0], value: this.props.value});
+    Object.keys(this.state).forEach((key) => {
+      this.setState({[key]: ""})
+    })
   }
 
   handleInputChange(event) {
@@ -66,7 +67,7 @@ class ContractFormValue extends Component {
   render() {
     return (
       <form className="pure-form pure-form-stacked">
-        {this.inputs.map((input, index) => {            
+        {this.inputs.map((input, index) => {
             var inputType = this.translateType(input.type)
             var inputLabel = this.props.labels ? this.props.labels[index] : input.name
             // check if input type is struct and if so loop out struct fields as well
