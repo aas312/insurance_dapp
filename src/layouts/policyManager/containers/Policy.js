@@ -86,7 +86,7 @@ class Policy extends Component {
     })()
 
     return(
-      <div className="pure-u-1-1">
+      <div style={{border: 'solid 1px black', padding: '15px 30px 30px 30px'}} className="pure-u-1-1">
         <h2>Policy: {name}</h2>
         <p>Policy Manager: {policyManager} </p>
         <p>Price: {price} </p>
