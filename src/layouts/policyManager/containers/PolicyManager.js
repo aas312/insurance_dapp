@@ -8,14 +8,18 @@ import PolicyManagerInterface from './../../../../build/contracts/PolicyManager.
 import Policy from './Policy.js'
 import { AccountData } from 'drizzle-react-components'
 import AddPolicyManager from './../components/AddPolicyManager.js'
-import CreatePolicy from './../components/CreatePolicy.js'
+import CreatePolicyForm from './CreatePolicyForm.js'
+import PendingSpinner from './../components/PendingSpinner.js'
+
 
 class PolicyManager extends Component {
 
-
-
   constructor(props, context) {
     super(props)
+
+    this.handleStop = this.handleStop.bind(this);
+    this.handleRestart = this.handleRestart.bind(this);
+    this.loadPolicies = this.loadPolicies.bind(this);
 
 		this.keys = {}
 		this.contracts = context.drizzle.contracts
@@ -23,30 +27,57 @@ class PolicyManager extends Component {
     this.keys.isPolicyManager = this.contracts.PolicyManager.methods.policyManagers.cacheCall(this.props.accounts[0])
     this.keys.admin = this.contracts.PolicyManager.methods.admin.cacheCall()
 
-    this.keys.policies = this.contracts.PolicyManager.methods.getAllPolicies.cacheCall()
-
-
     this.keys.policyManagerContract = this.contracts.Registry.methods.getBackendContract.cacheCall()
 
-
+    let initialState = {policies: []}
+    initialState['showSpinner'] = false
+    this.state = initialState;
 
   }
 
-
-  componentWillMount() {
-
-    (async () => {
-      let policies = await this.contracts.PolicyManager.methods.getAllPolicies().call()
-      for (let policy of policies) {
-        var contractConfig = {
+  async loadPolicies() {
+    let gas = 50000 + Math.floor(Math.random() * 1000) + 1
+    let policies = await this.contracts.PolicyManager.methods.getAllPolicies().call({gas})
+    for (let policy of policies) {
+      if (typeof this.contracts[policy] == undefined) {
+        let contractConfig = {
           contractName: policy,
           web3Contract: new this.context.drizzle.web3.eth.Contract(PolicyInterface.abi, policy)
         }
 
         this.context.drizzle.addContract(contractConfig)
       }
-    })()
+    }
+    policies.reverse()
+    this.setState({policies})
+  }
 
+  componentWillMount() {
+
+    (async () => {
+      await this.updateStopped()
+      await this.loadPolicies()
+    })()
+  }
+
+  handleStop() {
+    (async () => {
+      await this.contracts.PolicyManager.methods.stopContract().send({from: this.props.accounts[0]});
+      await this.updateStopped()
+    })()
+  }
+
+  handleRestart() {
+    (async () => {
+      await this.contracts.PolicyManager.methods.restartContract().send({from: this.props.accounts[0], gas: 50000})
+      await this.updateStopped()
+    })()
+  }
+
+  async updateStopped() {
+    let gas = 50000 + Math.floor(Math.random() * 1000) + 1
+    let stopped = await this.contracts.PolicyManager.methods.stopped().call({gas})
+    this.setState({stopped})
   }
 
   render() {
@@ -57,16 +88,11 @@ class PolicyManager extends Component {
   	let currentAddress = this.props.accounts[0]
   	let isAdmin = false
   	let policyList
-
+    let stopped
 
     if((this.keys.isPolicyManager in this.props.PolicyManager.policyManagers)) {
     	isPolicyManager = this.props.PolicyManager.policyManagers[this.keys.isPolicyManager].value
     }
-
-    if((this.keys.policies in this.props.PolicyManager.getAllPolicies)) {
-    	policies = this.props.PolicyManager.getAllPolicies[this.keys.policies].value
-    	policyList = policies.map((policy) => <Policy key={policy} policy={policy} />)
-		}
 
     if((this.keys.admin in this.props.PolicyManager.admin)) {
     	admin = this.props.PolicyManager.admin[this.keys.admin].value
@@ -75,15 +101,21 @@ class PolicyManager extends Component {
 	  	}
 		}
 
+    // Get policies
+    policies = this.state.policies
+    policyList = policies.map((policy) => <Policy key={policy} policy={policy} />)
+
+    stopped = this.state.stopped
+
 		// Make sure we have required data before rendering.
-		if (typeof isPolicyManager === 'undefined'|| typeof policies === 'undefined' || typeof admin === 'undefined') {
+		if (typeof isPolicyManager === 'undefined'|| typeof policies === 'undefined' || typeof admin === 'undefined' || typeof stopped === 'undefined') {
 	    return(
-	        <div className="pure-g">
-	          <div className="pure-u-1-1">
-	            <h1>⚙️</h1>
-	            <p>Loading dapp...</p>
-	          </div>
-	        </div>
+        <div className="pure-g">
+          <div className="pure-u-1-1">
+            <h1>⚙️</h1>
+            <p>Loading dapp...</p>
+          </div>
+        </div>
 	    )
 	 	}
 
@@ -121,14 +153,36 @@ class PolicyManager extends Component {
           }
 
           {isAdmin &&
-          	<AddPolicyManager />
+            <div>
+              <form>
+                {!stopped &&
+                  <div>
+                    <button style={{color: 'red'}} key="stop" className="pure-button" type="button" onClick={this.handleStop}>Stop Contract</button>
+                  </div>
+                }
+                {stopped &&
+                  <button style={{color: 'green'}} key="restart" className="pure-button" type="button" onClick={this.handleRestart}>Restart Contract</button>
+                }
+              </form>
+              {!stopped &&
+                <AddPolicyManager />
+              }
+          </div>
           }
 
-          {isPolicyManager &&
-	          	<CreatePolicy />
+          {isPolicyManager && !stopped &&
+            <div className="pure-u-1-1">
+              <h2>Add Policy</h2>
+              <CreatePolicyForm loadPolicies={this.loadPolicies} labels={["Name", "Price", "Coverage Period (seconds)", "Max Claim", "Terms", "IPFS Hash Terms File"]} value={1000000000000000000}/>
+              <PendingSpinner contract="PolicyManager" />
+              <br/><br/>
+            </div>
           }
 
-          {policyList}
+          {!stopped &&
+            policyList
+          }
+          <PendingSpinner contract="PolicyManager" />
 
         </div>
       </main>
