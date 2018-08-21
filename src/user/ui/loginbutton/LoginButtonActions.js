@@ -1,5 +1,4 @@
 import { uport } from './../../../util/connectors.js'
-import { browserHistory } from 'react-router'
 
 export const USER_LOGGED_IN = 'USER_LOGGED_IN'
 function userLoggedIn(user) {

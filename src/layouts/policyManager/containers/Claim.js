@@ -28,23 +28,22 @@ class Claim extends Component {
   }
 
   handleApprove() {
-    //this.contracts[this.props.policy].methods.approveClaim.cacheSend(this.props.claimId, {from: this.props.accounts[0]});
     (async () => {
-      let receipt = await this.contracts[this.props.policy].methods.approveClaim(this.props.claimId).send({from: this.props.accounts[0]});
+      await this.contracts[this.props.policy].methods.approveClaim(this.props.claimId).send({from: this.props.accounts[0]});
       await this.updateClaim()
     })()
   }
 
   handleDeny() {
     (async () => {
-      let receipt = await this.contracts[this.props.policy].methods.denyClaim(this.props.claimId).send({from: this.props.accounts[0]})
+      await this.contracts[this.props.policy].methods.denyClaim(this.props.claimId).send({from: this.props.accounts[0]})
       await this.updateClaim()
     })()
   }
 
   handleCollect() {
     (async () => {
-      let receipt = await this.contracts[this.props.policy].methods.collectClaim(this.props.claimId).send({from: this.props.accounts[0]})
+      await this.contracts[this.props.policy].methods.collectClaim(this.props.claimId).send({from: this.props.accounts[0]})
       await this.updateClaim()
     })()
   }

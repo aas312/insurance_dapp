@@ -1,7 +1,6 @@
 import React from 'react'
 
 //Components
-import PendingSpinner from './PendingSpinner.js'
 import ContractFormValue from '../containers/ContractFormValue.js'
 
 function AddPolicyManager(props) {

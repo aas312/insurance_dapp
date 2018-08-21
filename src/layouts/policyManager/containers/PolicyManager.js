@@ -2,7 +2,6 @@ import { drizzleConnect } from 'drizzle-react'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import PolicyInterface from './../../../../build/contracts/Policy.json'
-import PolicyManagerInterface from './../../../../build/contracts/PolicyManager.json'
 
 // Components
 import Policy from './Policy.js'
@@ -39,7 +38,7 @@ class PolicyManager extends Component {
     let gas = 50000 + Math.floor(Math.random() * 1000) + 1
     let policies = await this.contracts.PolicyManager.methods.getAllPolicies().call({gas})
     for (let policy of policies) {
-      if (typeof this.contracts[policy] == undefined) {
+      if (typeof this.contracts[policy] === undefined) {
         let contractConfig = {
           contractName: policy,
           web3Contract: new this.context.drizzle.web3.eth.Contract(PolicyInterface.abi, policy)
