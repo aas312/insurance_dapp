@@ -14,7 +14,6 @@ class PolicyManagerProcessClaims extends Component {
     super(props)
 
     this.contracts = context.drizzle.contracts
-
     this.keys = {}
 
   }

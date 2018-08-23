@@ -123,9 +123,6 @@ class Policy extends Component {
         {isPolicyManager &&
           <PolicyManagerProcessClaims policy={this.props.policy} claimCount={claimCount} isPolicyManager={isPolicyManager} />
         }
-
-
-
       </div>
     )
   }

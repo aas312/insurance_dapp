@@ -28,9 +28,6 @@ class HolderClaims extends Component {
       holderClaimIds = this.props.contracts[this.props.policy].fetchPolicyHolderClaimsIds[this.keys.fetchPolicyHolderClaimsIds].value
     }
 
-//      holderClaimIds = holderClaimIds.reverse()
-
-
     // Wait for claim id list.
     if (typeof holderClaimIds === 'undefined') {
 

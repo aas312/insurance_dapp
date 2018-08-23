@@ -25,15 +25,15 @@ class CreatePolicyForm extends Component {
 
     // Iterate over abi for correct function.
     for (var i = 0; i < abi.length; i++) {
-        if (abi[i].name === 'createPolicy') {
-            this.inputs = abi[i].inputs;
+      if (abi[i].name === 'createPolicy') {
+        this.inputs = abi[i].inputs;
 
-            for (i = 0; i < this.inputs.length; i++) {
-                initialState[this.inputs[i].name] = '';
-            }
-
-            break;
+        for (i = 0; i < this.inputs.length; i++) {
+            initialState[this.inputs[i].name] = '';
         }
+
+        break;
+      }
     }
 
     initialState['buffer'] = ''
@@ -42,19 +42,19 @@ class CreatePolicyForm extends Component {
   }
 
   captureFile = (event) => {
-        event.stopPropagation()
-        event.preventDefault()
-        const file = event.target.files[0]
-        let reader = new window.FileReader()
-        reader.readAsArrayBuffer(file)
-        reader.onloadend = () => this.convertToBuffer(reader)
-      };
+    event.stopPropagation()
+    event.preventDefault()
+    const file = event.target.files[0]
+    let reader = new window.FileReader()
+    reader.readAsArrayBuffer(file)
+    reader.onloadend = () => this.convertToBuffer(reader)
+  };
   convertToBuffer = async(reader) => {
-      //file is converted to a buffer for upload to IPFS
-        const buffer = await Buffer.from(reader.result);
-      //set this buffer -using es6 syntax
-        this.setState({buffer});
-    };
+    //file is converted to a buffer for upload to IPFS
+    const buffer = await Buffer.from(reader.result);
+    //set this buffer -using es6 syntax
+    this.setState({buffer});
+  };
 
   handleUpload = async (event) => {
     this.setState({ showSpinner: true });
@@ -96,14 +96,14 @@ class CreatePolicyForm extends Component {
 
   translateType(type) {
     switch(true) {
-        case /^uint/.test(type):
-            return 'number'
-        case /^string/.test(type) || /^bytes/.test(type):
-            return 'text'
-        case /^bool/.test(type):
-            return 'checkbox'
-        default:
-            return 'text'
+      case /^uint/.test(type):
+        return 'number'
+      case /^string/.test(type) || /^bytes/.test(type):
+        return 'text'
+      case /^bool/.test(type):
+        return 'checkbox'
+      default:
+        return 'text'
     }
   }
 
@@ -111,10 +111,10 @@ class CreatePolicyForm extends Component {
     return (
       <form className="pure-form pure-form-stacked">
         {this.inputs.map((input, index) => {
-            var inputType = this.translateType(input.type)
-            var inputLabel = this.props.labels ? this.props.labels[index] : input.name
-            // check if input type is struct and if so loop out struct fields as well
-            return (<input key={input.name} type={inputType} name={input.name} value={this.state[input.name]} placeholder={inputLabel} onChange={this.handleInputChange} />)
+          var inputType = this.translateType(input.type)
+          var inputLabel = this.props.labels ? this.props.labels[index] : input.name
+          // check if input type is struct and if so loop out struct fields as well
+          return (<input key={input.name} type={inputType} name={input.name} value={this.state[input.name]} placeholder={inputLabel} onChange={this.handleInputChange} />)
         })}
         <p>Optionally store terms in file on IPFS.</p>
         <input type="file" onChange={this.captureFile} />
