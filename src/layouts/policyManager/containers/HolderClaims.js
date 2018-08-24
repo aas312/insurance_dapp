@@ -15,18 +15,11 @@ class HolderClaims extends Component {
 
     this.contracts = context.drizzle.contracts
 
-    this.keys = {}
-    this.keys.fetchPolicyHolderClaimsIds = this.contracts[this.props.policy].methods.fetchPolicyHolderClaimsIds.cacheCall(this.props.accounts[0])
-
   }
 
   render() {
 
-    let holderClaimIds
-
-    if((this.keys.fetchPolicyHolderClaimsIds in this.props.contracts[this.props.policy].fetchPolicyHolderClaimsIds)) {
-      holderClaimIds = this.props.contracts[this.props.policy].fetchPolicyHolderClaimsIds[this.keys.fetchPolicyHolderClaimsIds].value
-    }
+    let holderClaimIds = this.props.holderClaimIds
 
     // Wait for claim id list.
     if (typeof holderClaimIds === 'undefined') {

@@ -3,8 +3,6 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 // Components
-import ContractFormValue from './ContractFormValue.js'
-import PendingSpinner from './../components/PendingSpinner.js'
 import HolderClaims from './HolderClaims.js'
 import PolicyManagerProcessClaims from './PolicyManagerProcessClaims.js'
 
@@ -16,56 +14,178 @@ class Policy extends Component {
   constructor(props, context) {
     super(props)
 
+    this.handleClaimSubmit = this.handleClaimSubmit.bind(this);
+    this.handlePolicyPurchase = this.handlePolicyPurchase.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+
     this.contracts = context.drizzle.contracts
 
-    this.keys = {}
+    let initialState = {_amount: '', _reason: ''}
+    initialState['showSpinner'] = false
+    initialState['showSpinnerPurchase'] = false
+    this.state = initialState;
 
-    this.keys.getPolicyInfo = this.contracts[this.props.policy].methods.getPolicyInfo.cacheCall()
-    this.keys.policyHolders = this.contracts[this.props.policy].methods.policyHolders.cacheCall(this.props.accounts[0])
-    this.keys.getPolicyTime = this.contracts[this.props.policy].methods.getPolicyTime.cacheCall()
-    this.keys.claimCount = this.contracts[this.props.policy].methods.claimCount.cacheCall()
+  }
+
+  componentWillMount() {
+    (async () => {
+      await this.updateClaims()
+      await this.updateIsPolicyHolder()
+    })()
+  }
+
+  async updateClaims() {
+    let gas = 50000 + Math.floor(Math.random() * 1000) + 1
+    let claimCount = await this.contracts[this.props.policy].methods.claimCount().call({gas})
+    let holderClaimIds = await this.contracts[this.props.policy].methods.fetchPolicyHolderClaimsIds(this.props.accounts[0]).call({gas})
+    this.setState({claimCount, holderClaimIds})
+  }
+
+  async updateIsPolicyHolder() {
+    let gas = 50000 + Math.floor(Math.random() * 1000) + 1
+    let policyCurrentTime = await this.contracts[this.props.policy].methods.getPolicyTime().call({gas})
+    policyCurrentTime = parseInt(policyCurrentTime, 10)
+
+    let policyInstance = await this.contracts[this.props.policy].methods.policyHolders(this.props.accounts[0]).call({gas})
+    let isPolicyHolder = (parseInt(policyInstance.startDate, 10) > 0 && parseInt(policyInstance.endDate, 10) > policyCurrentTime) ? true : false
+
+    this.setState({policyCurrentTime, isPolicyHolder})
+
+    let policyInfo = await this.contracts[this.props.policy].methods.getPolicyInfo().call({gas})
+
+    this.setState({
+      policyManager: policyInfo._policyManager,
+      price: policyInfo._price,
+      coveragePeriod: policyInfo._coveragePeriod,
+      maxClaim: policyInfo._maxClaim,
+      coverageTerms: policyInfo._coverageTerms,
+      isPolicyManager: (policyInfo._policyManager === this.props.accounts[0]) ? true : false,
+      coverageTermsHash: policyInfo._coverageTermsHash,
+      name: policyInfo._name,
+    })
+  }
+
+  handlePolicyPurchase() {
+    (async () => {
+
+      let queryID = null
+      let currentBlock = "latest"
+      let receipt = await this.contracts[this.props.policy].methods.purchasePolicy().send({from: this.props.accounts[0], value: this.state.price})
+
+      this.setState({ showSpinnerPurchase: true });
+
+      if(typeof receipt.events.NewOraclizeQuery.returnValues.queryID !== undefined) {
+        queryID = receipt.events.NewOraclizeQuery.returnValues.queryID
+      }
+
+      if(typeof receipt.blockNumber !== undefined) {
+        currentBlock = receipt.blockNumber
+      }
+      const policyContractWeb3 = new this.context.drizzle.web3.eth.Contract(this.contracts[this.props.policy].abi, this.contracts[this.props.policy].address);
+      let checkPolicyFinalize = new Promise((resolve, reject) => {
+        const interval = setInterval(async () => {
+          const pastEvents = await policyContractWeb3.getPastEvents(
+            'FinalizePolicyHolder',
+            {
+               from: currentBlock,
+               to: 'pending'
+            }
+          );
+
+          for (let event of pastEvents) {
+            if(
+                typeof event.returnValues.queryID !== undefined &&
+                event.returnValues.queryID === queryID
+              ) {
+              clearInterval(interval)
+              resolve(event)
+              this.setState({ showSpinnerPurchase: false });
+            }
+          }
+        }, 1000);
+      })
+
+      await checkPolicyFinalize
+
+      await this.updateIsPolicyHolder()
+    })()
+  }
+
+  handleClaimSubmit() {
+    (async () => {
+
+      let queryID = null
+      let currentBlock = "latest"
+      let receipt = await this.contracts[this.props.policy].methods.createClaim(this.state._amount, this.state._reason).send({from: this.props.accounts[0]})
+
+      this.setState({ showSpinner: true });
+
+      if(typeof receipt.events.NewOraclizeQuery.returnValues.queryID !== undefined) {
+        queryID = receipt.events.NewOraclizeQuery.returnValues.queryID
+      }
+
+      if(typeof receipt.blockNumber !== undefined) {
+        currentBlock = receipt.blockNumber
+      }
+
+      const policyContractWeb3 = new this.context.drizzle.web3.eth.Contract(this.contracts[this.props.policy].abi, this.contracts[this.props.policy].address);
+
+      let checkForClaim = new Promise((resolve, reject) => {
+        const interval = setInterval(async () => {
+          const pastEvents = await policyContractWeb3.getPastEvents(
+            'ClaimFinalize',
+            {
+              from: currentBlock,
+              to: 'pending'
+            }
+          );
+
+          for (let event of pastEvents) {
+            if(
+                typeof event.returnValues.queryID !== undefined &&
+                event.returnValues.queryID === queryID
+              ) {
+              clearInterval(interval)
+              resolve(event)
+              this.setState({ showSpinner: false });
+            }
+          }
+        }, 1000);
+      })
+
+      await checkForClaim
+
+      this.setState({
+        _amount: '',
+        _reason: '',
+      })
+
+      await this.updateClaims()
+
+    })()
+  }
+
+  handleInputChange(event) {
+    this.setState({ [event.target.name]: event.target.value });
   }
 
   render() {
 
-    let policyInfo
-    let policyManager
-    let price
-    let coveragePeriod
-    let maxClaim
-    let coverageTerms
-    let isPolicyManager
-    let policyInstance
-    let isPolicyHolder
-    let policyCurrentTime
-    let claimCount
-    let coverageTermsHash
-    let name
+    let claimCount = this.state.claimCount
+    let isPolicyHolder = this.state.isPolicyHolder
+    let policyCurrentTime = this.state.policyCurrentTime
 
-    if((this.keys.getPolicyInfo in this.props.contracts[this.props.policy].getPolicyInfo)) {
-      policyInfo = this.props.contracts[this.props.policy].getPolicyInfo[this.keys.getPolicyInfo].value
-      policyManager = policyInfo._policyManager
-      price = policyInfo._price
-      coveragePeriod = policyInfo._coveragePeriod
-      maxClaim = policyInfo._maxClaim
-      coverageTerms = policyInfo._coverageTerms
-      isPolicyManager = (policyManager === this.props.accounts[0]) ? true : false
-      coverageTermsHash = policyInfo._coverageTermsHash
-      name = policyInfo._name
-    }
-
-    if((this.keys.getPolicyTime in this.props.contracts[this.props.policy].getPolicyTime)) {
-      policyCurrentTime = this.props.contracts[this.props.policy].getPolicyTime[this.keys.getPolicyTime].value
-      policyCurrentTime = parseInt(policyCurrentTime, 10)
-    }
-
-    if((this.keys.claimCount in this.props.contracts[this.props.policy].claimCount)) {
-      claimCount = this.props.contracts[this.props.policy].claimCount[this.keys.claimCount].value
-      claimCount = parseInt(claimCount, 10)
-    }
+    let policyManager = this.state.policyManager
+    let price = this.state.price
+    let coveragePeriod = this.state.coveragePeriod
+    let maxClaim = this.state.maxClaim
+    let coverageTerms = this.state.coverageTerms
+    let isPolicyManager = this.state.isPolicyManager
+    let coverageTermsHash = this.state.coverageTermsHash
+    let name = this.state.name
 
     // Make sure we have required data before rendering.
-    if (typeof policyInfo === 'undefined' || typeof policyCurrentTime === 'undefined') {
+    if (typeof isPolicyHolder === 'undefined' || typeof policyCurrentTime === 'undefined' || typeof claimCount === 'undefined') {
       return(
         <div className="pure-g">
           <div className="pure-u-1-1">
@@ -74,11 +194,6 @@ class Policy extends Component {
           </div>
         </div>
       )
-    }
-
-    if((this.keys.policyHolders in this.props.contracts[this.props.policy].policyHolders)) {
-      policyInstance = this.props.contracts[this.props.policy].policyHolders[this.keys.policyHolders].value
-      isPolicyHolder = (parseInt(policyInstance.startDate, 10) > 0 && parseInt(policyInstance.endDate, 10) > policyCurrentTime) ? true : false
     }
 
     (async () => {
@@ -102,9 +217,12 @@ class Policy extends Component {
           <div>
             <h2>Purchase {name}</h2>
             <p>{price} wei plus gas will be sent to cover the cost of the policy.</p>
-            <ContractFormValue contract={this.props.policy} method="purchasePolicy" value={price}/>
-            <br/>
-            <PendingSpinner contract={this.props.policy} />
+            <form className="pure-form pure-form-stacked">
+              <button key="claimSubmit" className="pure-button" type="button" onClick={this.handlePolicyPurchase}>Submit</button>
+              {this.state.showSpinnerPurchase &&
+                <p> 🔄 Waiting for Oraclize Callback</p>
+              }
+            </form>
           </div>
         }
 
@@ -113,13 +231,19 @@ class Policy extends Component {
           <div>
             <p>Congratulations for owning this policy!</p>
             <h2>Submit Claim</h2>
-            <ContractFormValue contract={this.props.policy} method="createClaim" value={0} labels={["Claim Amount", "Claim Reason"]}/>
+            <form className="pure-form pure-form-stacked">
+              <input key="_amount" type="number" name="_amount" value={this.state._amount} placeholder="Amount" onChange={this.handleInputChange} />
+              <input key="_reason" type="text" name="_reason" value={this.state._reason} placeholder="Reason" onChange={this.handleInputChange} />
+              <button key="claimSubmit" className="pure-button" type="button" onClick={this.handleClaimSubmit}>Submit</button>
+              {this.state.showSpinner &&
+                <p> 🔄 Waiting for Oraclize Callback</p>
+              }
+            </form>
             <br/>
-            <PendingSpinner contract={this.props.policy} />
           </div>
         }
 
-        <HolderClaims policy={this.props.policy} claimCount={claimCount} isPolicyManager={isPolicyManager} />
+        <HolderClaims policy={this.props.policy} claimCount={claimCount} isPolicyManager={isPolicyManager} holderClaimIds={this.state.holderClaimIds} />
         {isPolicyManager &&
           <PolicyManagerProcessClaims policy={this.props.policy} claimCount={claimCount} isPolicyManager={isPolicyManager} />
         }

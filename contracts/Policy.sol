@@ -41,6 +41,7 @@ contract Policy is usingOraclize {
         address policyHolder;   // The Policy holder, as address
         string reason;          // Reason, used for submitting a claim
         uint amount;            // Amount, used for submitting a claim
+        bool done;              // Updated when callback has completed
     }
 
     // Map Oraclize query ids to the stored data to use in the callback.
@@ -68,11 +69,11 @@ contract Policy is usingOraclize {
 
     // Policy purchase events
     event SubmitPolicyHolder(address indexed policyHolder);
-    event FinalizePolicyHolder(address indexed policyHolder);
+    event FinalizePolicyHolder(address indexed policyHolder, bytes32 queryID);
 
     // Claim events
     event ClaimSubmit(address indexed policyHolder);
-    event ClaimFinalize(address indexed policyHolder, uint indexed claimId);
+    event ClaimFinalize(address indexed policyHolder, uint indexed claimId, bytes32 queryID);
     event ClaimApproved(address indexed policyHolder, uint indexed claimId);
     event ClaimDenied(address indexed policyHolder, uint indexed claimId);
     event ClaimPaid(address indexed policyHolder, uint indexed claimId);
@@ -86,7 +87,7 @@ contract Policy is usingOraclize {
     event WithdrawFundsEvent(uint amount);
 
     // Oraclize base events
-    event NewOraclizeQuery(string description);
+    event NewOraclizeQuery(string description, bytes32 queryID);
     event NewTimeMeasure(string time);
 
     // Emergency Stop Modifiers
@@ -207,11 +208,12 @@ contract Policy is usingOraclize {
         returns(bytes32 myID)
     {
         // Submit to Oraclize to get the current time.
-        emit NewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
         myID = oraclize_query("WolframAlpha", "Timestamp now");
+        emit NewOraclizeQuery("Oraclize query was sent, standing by for the answer..", myID);
         // Store the date we'll need to create the policy.
         pendingcalls[myID].octype = OCType.PolicyPurchase;  // The type used in the callback to finalize purchase.
         pendingcalls[myID].policyHolder = msg.sender;       // Store the policy holder in our mapping
+        pendingcalls[myID].done = false;    // Store the state of the query
         emit SubmitPolicyHolder(msg.sender);
     }
 
@@ -230,13 +232,14 @@ contract Policy is usingOraclize {
         require(reasonCheck.length > 0 && reasonCheck.length < 1000, "Reason is not set or too long");
 
         // Submit to Oraclize to get the current time.
-        emit NewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
         bytes32 myID = oraclize_query("WolframAlpha", "Timestamp now");
+        emit NewOraclizeQuery("Oraclize query was sent, standing by for the answer..", myID);
         // Save out data to create claim in the callback.
         pendingcalls[myID].octype = OCType.ClaimSubmit; // The type used in the callback to finalize the claim.
         pendingcalls[myID].reason = _reason;    // Store reason to use for the claim.
         pendingcalls[myID].amount = _amount;    // Store amount to use for the claim.
         pendingcalls[myID].policyHolder = msg.sender;   // Store the policy holder to use for the claim.
+        pendingcalls[myID].done = false;    // Store the state of the query
         emit ClaimSubmit(msg.sender);
     }
 
@@ -414,7 +417,7 @@ contract Policy is usingOraclize {
             policyHolders[policyHolder].startDate = currentTime;
             // Set the policy instance end date based on the start and coverage period.
             policyHolders[policyHolder].endDate = SafeMath.add(currentTime, coveragePeriod);
-            emit FinalizePolicyHolder(policyHolder);
+            emit FinalizePolicyHolder(policyHolder, myID);
         }
         // If we are doing a claim.
         if (pendingcalls[myID].octype == OCType.ClaimSubmit) {
@@ -431,8 +434,9 @@ contract Policy is usingOraclize {
             claims[_claimId].reason = pendingcalls[myID].reason;    // Store the reason for the claim.
             // Add the claim id to the array of claim ids associated with the policy holder.
             policyHolders[policyHolder].claimIds.push(claimCount);
-            emit ClaimFinalize(policyHolder, _claimId);
+            emit ClaimFinalize(policyHolder, _claimId, myID);
         }
+        pendingcalls[myID].done = true;    // Update the state of the query
     }
 
     /** @dev Policy Manager can withdraw funds from the policy.

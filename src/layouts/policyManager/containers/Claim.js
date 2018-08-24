@@ -61,8 +61,6 @@ class Claim extends Component {
     this.setState({claim})
   }
 
-
-
   render() {
 
     let claim
