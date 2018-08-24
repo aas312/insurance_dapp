@@ -123,7 +123,7 @@ class PolicyManager extends Component {
         <div className="pure-g">
           <div className="pure-u-1-1 header">
             <h1>Insurance Policy Manager</h1>
-            <p>Fun and Fancy insurance to meet all of your needs.</p>
+            <p>Insurance to meet all of your needs.</p>
             <br/><br/>
           </div>
 
