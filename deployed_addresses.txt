@@ -1,0 +1,10 @@
+Addresses deployed on the Rinkeby network
+
+PolicyManager.sol
+deployed to address
+0xbddef65096440680f5d508346dd78e8e31db59cf
+
+Registry.sol
+deployed to address
+0x0f58be47d90e90560997a8004d5cd50b9f4974a9
+
