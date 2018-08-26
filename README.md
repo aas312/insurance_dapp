@@ -59,11 +59,6 @@ $ ethereum-bridge -H localhost:8545 -a 9 --dev
 Leave it running
 
 
-Run truffle test
-From repo root
-```
-$ truffle test
-```
 
 Run contract migration
 From repo root
@@ -116,3 +111,78 @@ $ npm start
 
 This should start the application on http://localhost:3000/
 You can visit it in the browser if it didn't open on it's own.
+
+### Login to the application
+At this point the local ganache-cli chain should be running, the ethererum-bridge for oraclize calls should be started, the contracts should be migrated to the local chain and the local application should be running on http://localhost:3000/
+
+You should see "Insurance Dapp" as the title and "Login with Uport" in the upper right hand corner.
+
+Clicking "Login with Uport" will the give the Uport login options.
+
+Download and set up the Uport app to your device.
+
+On the Insurance Dapp page click "Continue with uPort."
+
+On your device use the QR code scanner from the uPort app to scan the QR code.
+Insurance Dapp should appear as requesting information.
+
+Click continue on your device.
+This should complete the login in the browser dapp.
+
+You should now see the Uport Name and Country you provided, along with the active account and balance of your current metamask account.
+
+You should see the policy manager address in the registry contract.
+
+### Owner Features
+Switch to account 1 in metamask.  Refresh the page.
+
+#### Emergency Stop
+Account 1 may use the emergency stop to lock the contract and "restart" the contract to make contract functions available again.
+
+#### Add a policy manager
+To use, copy the address of another account from metamask (copy the address for account 2.)  Enter it in the text field, click submit and sign the transaction with metamask.  Wait for it to complete.  We now have a policy manager!
+
+### Policy Manager Features
+Switch to account 2 in metamask that was just added as policy manager.  Refresh the page.
+The option to add a policy should now be available.
+
+#### Add a policy
+Name
+Price in wei
+Coverage Period in seconds (3600 second = 1 hour)
+The maximum allowed claim for the policy
+Terms text string
+Optionally, either enter a hash of an ipfs file to represent the terms or use the upload field to upload a file to ipfs.  This may take some time depending on the size of the file.  When the upload is complete it should automatically populate the hash field.
+Click submit and approve the transaction in metamask.  This should add the policy.
+
+#### Approve/Deny a claim
+Once a claim has been submitted the policy manager for the policy can approve or deny it.
+Click Approve or Deny and sign the transaction in metamask.
+
+### User Features
+Switch to account 3 in metamask.  Refesh the page.
+
+#### Purchase a policy
+The policy we just added should now be available for purchase.
+Click submit and sign the transaction in metamask.
+This transaction uses an oraclize callback to get the current timestamp off chain.  Oraclize receives the query when we submit our transaction, then uses a second transaction to call back into our contract and complete the purchase.  The timestamp received is the contract start time.
+
+#### Submit a claim
+Now that we are a policy owner we can submit any number of claims against the policy.  Claims must be submitted while the policy is active (the length of the coverage period after the start date.)
+Enter an amount (lower than the max claim.).
+Enter a reason for the claim.
+Submit and sign.
+This also uses an oraclize call back to get a current timestamp and uses that to validate the requirement that the policy is currently valid and not expired.
+
+#### Collect a claim
+Once a claim has been approved by the policy manager the submitter of the claim may collect it.
+Click collect and sign in metamask.
+This will transfer the funds from the policy to the policy holder.
+
+### Testing
+
+Run truffle test
+From repo root
+```
+$ truffle test
+```
