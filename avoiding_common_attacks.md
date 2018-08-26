@@ -4,10 +4,10 @@ Steps taken to avoid common attacks
 Used extensive code review, testing and unit test.
 
 ### Recursive Calls
-The contracts use pull withdrawal method to avoid reentrancy from a fallback function.  Ether is transferred at the end of function calls after state updates.  Controlling access to functions.
+The contracts uses pull withdrawal method to avoid reentrancy from a fallback function.  Ether is transferred at the end of function calls after state updates.  Access to functions is limited in many cases.
 
 ### Integer Arithmetic Overflow/Underflow
-Using safe math library for integer arithmetic
+Using safe math library for integer arithmetic.
 
 ### Poison Data
 Limits are set for the size of all user-supplied strings.

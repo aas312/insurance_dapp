@@ -1,10 +1,10 @@
 ### Design Decisions
 
 ### Factory
-The project is setup using the factory model.  The policy manager contract acts as a factory for managing policy managers and creating any number of policy contracts.  It would be possible to create the same functionality using a single contract but it would be more complex and present higher risk from a security perspective.  By limiting the funds, management, policy holders and claims for a policy instance to a single contract the risk of some unforeseen risk, from a bad actor, to faulty code conditions is greatly mitigated.
+The project is setup using the factory model.  The policy manager contract acts as a factory for managing policy managers and creating any number of policy contracts.  It would be possible to create the same functionality using a single contract but it would be more complex and present higher risk from a security perspective.  By limiting the funds, management, policy holders and claims for a policy instance to a single contract the risk of some unforeseen risk, from a bad actor, to faulty code conditions is greatly mitigated.  It also allows the possibility of upgrading the Policy Manager factory contract functionality while leaving already created policies secure and untouched.
 
 ### Circuit Breaker
-A circuit breaker has been implemented both the policy manager contract and any created policies.  A policy manager could lock the policy against claim submissions and policy purchases, but still add and withdraw funds in case of an emergency, security or otherwise.
+A circuit breaker has been implemented in both the policy manager contract and any created policies.  A policy manager could lock the policy against claim submissions and policy purchases, but still add and withdraw funds in case of an emergency, security or otherwise.
 
 ### Pull Payments
 While it was possible to transfer payment immediately when a claim was approved this created a risk of a malicious contract not being able to accept funds and would lock the policy from being able to approve claims.  Forcing a policy holder to withdraw the funds after approval puts the requirement on them without the possibility of breaking functionality for the policy manager.
