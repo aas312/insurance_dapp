@@ -9,7 +9,7 @@ An admin manages the marketplace adding policy managers.  A policy manager can c
 
 An administrator opens the web app. The web app reads the address and identifies that the user is an admin, showing them admin only function of adding new policy managers.
 
-A policy manager opens the web app.  The web app reads the address and identifies that they are a policy manager.  The policy manager may create a new policy: setting a policy name, the price to purchase the policy, the maximum claim amount that can be submitted, the coverage period for the policy, the terms of the policy and optionally upload a file to ipfs to represent the terms of the policy.  The policy manager can manage any claims against own of their policies, either approving or denying it.
+A policy manager opens the web app.  The web app reads the address and identifies that they are a policy manager.  The policy manager may create a new policy: setting a policy name, the price to purchase the policy, the maximum claim amount that can be submitted, the coverage period for the policy, the terms of the policy and optionally upload a file to IPFS to represent the terms of the policy.  The policy manager can manage any claims against own of their policies, either approving or denying it.
 
 A policy holder opens the web app.  The web app reads the address and identifies that the user is a policy holder.  The policy holder may submit a claim against any policies that they own.  The policy holder can collect any claims against any previously submitted claims that have been approved.
 
@@ -29,7 +29,7 @@ Install oraclize ethereum bridge
 ```
 $ npm install -g ethereum-bridge
 ```
-Download and install the metamask extension for chrome or firefox
+Download and install the MetaMask extension for chrome or firefox
 https://metamask.io/
 
 Clone the repository
@@ -67,7 +67,7 @@ $ truffle migrate
 ```
 
 Open a browser window.
-Log out of Metamask.
+Log out of MetaMask.
 Select "Restore from seed phrase"
 Enter the seed phrase used to start the ganache local blockchain
 ```
@@ -78,7 +78,8 @@ Create a password
 Select the accounts button and "Create Account" until there is a total of at least 3 accounts.
 The account addresses should match the accounts listed when ganache-cli was started:
 Available Accounts
-==================
+
+
 (0) 0xece650266409a2348c1d65e0423d55228ec03e57
 (1) 0x92531fe27d14a8812ccdde7721cd4766a28529dc
 (2) 0xb63e8485429b3c8c3f9538fadb9f97eac05d9203
@@ -91,7 +92,7 @@ Available Accounts
 (9) 0x8225581895c67b689eb384e7359cad6c35ad4b8c
 
 Private Keys
-==================
+
 (0) 64ee33717699488e480a1da7361286dc466774b76f47533ce96a1ddd6aadec46
 (1) c487fef68581afe330474b4bb79acc6ac31818ec5fc2838dd15da591e6ac8e24
 (2) 48bb5030b4843b51cc9e1bf977cc1c6d865082bd372b98f04abe4f9f4b1cbc52
@@ -119,7 +120,7 @@ You should see "Insurance Dapp" as the title and "Login with Uport" in the upper
 
 Clicking "Login with Uport" will the give the Uport login options.
 
-Download and set up the Uport app to your device.
+Download and set up the uPort app to your device.
 
 On the Insurance Dapp page click "Continue with uPort."
 
@@ -129,21 +130,21 @@ Insurance Dapp should appear as requesting information.
 Click continue on your device.
 This should complete the login in the browser dapp.
 
-You should now see the Uport Name and Country you provided, along with the active account and balance of your current metamask account.
+You should now see the Uport Name and Country you provided, along with the active account and balance of your current MetaMask account.
 
 You should see the policy manager address in the registry contract.
 
 ### Owner Features
-Switch to account 1 in metamask.  Refresh the page.
+Switch to account 1 in MetaMask.  Refresh the page.
 
 #### Emergency Stop
 Account 1 may use the emergency stop to lock the contract and "restart" the contract to make contract functions available again.
 
 #### Add a policy manager
-To use, copy the address of another account from metamask (copy the address for account 2.)  Enter it in the text field, click submit and sign the transaction with metamask.  Wait for it to complete.  We now have a policy manager!
+To use, copy the address of another account from MetaMask (copy the address for account 2.)  Enter it in the text field, click submit and sign the transaction with MetaMask.  Wait for it to complete.  We now have a policy manager!
 
 ### Policy Manager Features
-Switch to account 2 in metamask that was just added as policy manager.  Refresh the page.
+Switch to account 2 in MetaMask that was just added as policy manager.  Refresh the page.
 The option to add a policy should now be available.
 
 #### Add a policy
@@ -152,31 +153,31 @@ Price in wei
 Coverage Period in seconds (3600 second = 1 hour)
 The maximum allowed claim for the policy
 Terms text string
-Optionally, either enter a hash of an ipfs file to represent the terms or use the upload field to upload a file to ipfs.  This may take some time depending on the size of the file.  When the upload is complete it should automatically populate the hash field.
-Click submit and approve the transaction in metamask.  This should add the policy.
+Optionally, either enter a hash of an IPFS file to represent the terms or use the upload field to upload a file to IPFS.  This may take some time depending on the size of the file.  When the upload is complete it should automatically populate the hash field.
+Click submit and approve the transaction in MetaMask.  This should add the policy.
 
 #### Approve/Deny a claim
 Once a claim has been submitted the policy manager for the policy can approve or deny it.
-Click Approve or Deny and sign the transaction in metamask.
+Click Approve or Deny and sign the transaction in MetaMask.
 
 ### User Features
-Switch to account 3 in metamask.  Refesh the page.
+Switch to account 3 in MetaMask.  Refesh the page.
 
 #### Purchase a policy
 The policy we just added should now be available for purchase.
-Click submit and sign the transaction in metamask.
-This transaction uses an oraclize callback to get the current timestamp off chain.  Oraclize receives the query when we submit our transaction, then uses a second transaction to call back into our contract and complete the purchase.  The timestamp received is the contract start time.
+Click submit and sign the transaction in MetaMask.
+This transaction uses an Oraclize callback to get the current timestamp off chain.  Oraclize receives the query when we submit our transaction, then uses a second transaction to call back into our contract and complete the purchase.  The timestamp received is the contract start time.
 
 #### Submit a claim
 Now that we are a policy owner we can submit any number of claims against the policy.  Claims must be submitted while the policy is active (the length of the coverage period after the start date.)
 Enter an amount (lower than the max claim.).
 Enter a reason for the claim.
 Submit and sign.
-This also uses an oraclize call back to get a current timestamp and uses that to validate the requirement that the policy is currently valid and not expired.
+This also uses an Oraclize call back to get a current timestamp and uses that to validate the requirement that the policy is currently valid and not expired.
 
 #### Collect a claim
 Once a claim has been approved by the policy manager the submitter of the claim may collect it.
-Click collect and sign in metamask.
+Click collect and sign in MetaMask.
 This will transfer the funds from the policy to the policy holder.
 
 ### Testing
@@ -186,3 +187,100 @@ From repo root
 ```
 $ truffle test
 ```
+
+#### Explanation of test
+
+Policy.sol in policy.test.js
+
+The policy contract requires constructor values and is created in a factory fashion so we can't rely on the migration script or an existing deployed contract.  Before our test we create a new instance of the contract with correct constructor values capture it's address to use in all test.
+
+should accept funds:
+Written to verify the ability to send funds to the contract.  Verifies correct balances for a user and the policy contract when funds are sent to the contract and event is emitted.  
+
+should withdraw funds:
+Written to verify the ability of the policy manager to withdraw funds from the contract.  Verifies correct balances after withdrawal and that event is emitted.
+
+should stop the contract:
+Written to verify the ability to use the emergency stop for the contract.  Verify the stop function, contract state is updated as expected and events are emitted.
+
+should restart the contract:
+Written to verify the ability to restart the contract after the emergency stop has been used.  Verify the restart function, contract state and emitted events.
+
+should have correct constructor values:
+Written to verify the policy is created as expected with the passed constructor values.  Test contstructor function and getter functions for public variables.
+
+should add a policy holder:
+Written to verify the ability of a user to purchase a policy.  Test the purchase policy function, Oraclize callback, the emitted event and the ability to get policy holder info.
+
+should add a claim:
+Written to verify the ability of a policy holder to submit a claim.  Test the submit claim function, Oraclize callback, the emitted event and getting the info for a submitted claim.
+
+should deny a claim:
+Written to verify the ability of the policy manager to deny a claim.  Test creates a claim from a policy holder, test the deny claim function with an emitted event and that the claim state is updated accordingly.
+
+should approve a claim:
+Written to verify the ability of the policy manager to approve a claim.  Test creates a claim from a policy holder, test the approve claim function with an emitted event and the the claim state is updated accordingly.
+
+should collect a claim:
+Written to verify the ability of a user to collect a claim they have submitted.  Test creates a claim from a policy holder, approves it by a policy manager and test the claim collect function and emitted event for the user as well as balances.
+
+PolicyManager.sol in policy_manager.test.js
+
+should add a policy manager:
+Written to verify the ability of the factory contract owner to add a policy manager.  Test add policy manager function, emitted event and state update.
+
+should add a policy:
+Written to verify the ability of a policy manager to create a new policy.  Test the create policy function, emitted event and that the policy was created as expected.
+
+should stop the contract:
+Written to verify the ability of the contract owner to use the emergency stop.  Test stop contract function, emitted events and state updates.
+
+should restart the contract:
+Written to verify the ability of the contract owner to restart the contract.  Test the restart contract function, emitted events and state updates.
+
+should reject non admins adding policy managers:
+Written to verify modifier will throw an error if non admin/owner user tries to add a policy manager.  Will assert that an error is thrown.
+
+should reject non policy managers adding policies:
+Written to veriy that only a policy manager can add policies.  Will assert that an error is thrown.
+
+### Design Pattern Requirements
+Circuit breaker is implemented in Policy Manager and Policy contracts.  It is available in the UI of the front end app for policy manager.
+
+Other design decisions are discussed in [design_pattern_desicions.md](design_pattern_desicions.md)
+
+### Security considerations
+Discussed in [avoiding_common_attacks.md](avoiding_common_attacks.md)
+
+### Library Contract
+The project uses the SafeMath library for safe addition in the Policy contract.
+The usingOraclize base contract is used as well.
+
+### Additional Requirements
+Project contracts are commented and formatted according to the documentation.
+
+### Stretch Goals
+
+#### Project uses IPFS
+The project is hosted and [available on IPFS ](https://ipfs.infura.io/ipfs/QmZhy2hpuR2653Kt3ny5vRnTt8mv4gLnFgqju7qLmCoUSL/)
+To view the project on IPFS you must be conntected to the Rinkeby network in MetaMask since that's where the known contract addresses are in the hosted version of the app.
+It also utilizes IPFS in the creation of policies.  A user may upload a file to IPFS during the policy creation process and it will be linked in the policy information.
+
+#### Project uses uPort
+The uPort mobile app is used to login to the project and uPort information is displayed from within the project.
+
+#### Project uses the Ethereum Name Service
+From within MetaMask switch to the main net since this is where ENS names are publicly available.  Got to [http://jethrojones.eth/](http://jethrojones.eth/)
+This should redirect to the app hosted at the IPFS hash above.
+The dapp won't load because it is not deployed on the main net.
+Switch to Rinkeby network in MetaMask to load the dapp and refresh.
+
+#### Project uses an Oracle
+The project uses the Oraclize oracle service to get the current timestamp.  This is used for policy purchases for the policy start time and submitting claims to verify a policy is valid.  The calls to oraclize can be seen in the ethereum bridge when running locally.
+
+#### Project uses an upgradable pattern.
+The project uses a Registry contract which holds the currently deploy address of the Policy Manager factory contract.  As part of the migration script the address for the deployed Policy Manager factory contract is captured and updated as the new backend contract in the Registry contract.  Subsequent migrations will keep the same Registry contract and deploy new versions of the factory contract and update the registry.  The current Policy Manager factory contract stored in the Registry is shown in the dapp.
+
+#### Testnet Deployment
+Dapp is deployed to the Rinkeby test net.  This can be seen by switching to the Rinkeby test net while using the front end either hosted locally or from IPFS.  Deployed addresses are listed in [deployed_addresses.txt](deployed_addresses.txt)
+
