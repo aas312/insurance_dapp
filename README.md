@@ -139,7 +139,7 @@ You can visit it in the browser if it didn't open on it's own.
 ### Login to the application
 At this point the local ganache-cli chain should be running, the ethererum-bridge for Oraclize calls should be started, the contracts should be migrated to the local chain and the local application should be running on http://localhost:3000/
 
-You should see "Insurance Dapp" as the title and "Login with Uport" in the upper right hand corner.
+You should see "Insurance Dapp" as the title and "Login with Uport" in the upper right hand corner in the browser window.
 
 Clicking "Login with Uport" will the give the uPort login options.
 
@@ -205,8 +205,7 @@ This will transfer the funds from the policy to the policy holder.
 
 ### Testing
 
-Run truffle test
-From repo root
+Run truffle test from the repo root
 ```
 truffle test
 ```
@@ -285,7 +284,7 @@ Project contracts are commented and formatted according to the documentation.
 ### Stretch Goals
 
 #### Project uses IPFS
-The project is hosted and available on IPFS [https://ipfs.infura.io/ipfs/QmZhy2hpuR2653Kt3ny5vRnTt8mv4gLnFgqju7qLmCoUSL/](https://ipfs.infura.io/ipfs/QmZhy2hpuR2653Kt3ny5vRnTt8mv4gLnFgqju7qLmCoUSL/).  To view the project on IPFS you must be conntected to the Rinkeby network in MetaMask since that's where the known contract addresses are in the hosted version of the app.
+The project is hosted and available on IPFS [https://ipfs.infura.io/ipfs/QmZhy2hpuR2653Kt3ny5vRnTt8mv4gLnFgqju7qLmCoUSL/](https://ipfs.infura.io/ipfs/QmZhy2hpuR2653Kt3ny5vRnTt8mv4gLnFgqju7qLmCoUSL/).  To view the project on IPFS you must be connected to the Rinkeby network in MetaMask since that's where the known contract addresses are in the hosted version of the app.
 It also utilizes IPFS in the creation of policies.  A user may upload a file to IPFS during the policy creation process and it will be linked in the policy information.
 
 #### Project uses uPort
