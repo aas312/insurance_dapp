@@ -48,46 +48,45 @@ A user opens the web app.  The web app reads the address and identifies the user
 
 Install truffle:
 ```
-$ npm install -g truffle
+npm install -g truffle
 ```
 Install ganache cli
 ```
-$ npm install -g ganache-cli
+npm install -g ganache-cli
 ```
 Install oraclize ethereum bridge
 ```
-$ npm install -g ethereum-bridge
+npm install -g ethereum-bridge
 ```
 Download and install the MetaMask extension for chrome or firefox
 https://metamask.io/
 
 Clone the repository
 ```
-$ git clone https://github.com/jethr0j0nes/insurance_dapp.git
-$ cd insurance_dapp/
+git clone https://github.com/jethr0j0nes/insurance_dapp.git
+cd insurance_dapp/
 ```
-Download dependencies
-From repo root
+Download dependencies from the repo root
 ```
-$ npm install
+npm install
 ```
 
 ### Start the application
 Open a new terminal and start the local blockchain with ganache cli
 ```
-$ ganache-cli -m "farm fossil million man pluck inside dial cheese skin humor nuclear pull"
+ganache-cli -m "farm fossil million man pluck inside dial cheese skin humor nuclear pull"
 ```
 Leave it running
 
 Open a new terminal and start the local oraclize ethereum bridge
 ```
-$ ethereum-bridge -H localhost:8545 -a 9 --dev
+ethereum-bridge -H localhost:8545 -a 9 --dev
 ```
 Leave it running
 
 Run the contract migration from the repo root
 ```
-$ truffle migrate
+truffle migrate
 ```
 
 Open a browser window<br/>
@@ -131,30 +130,30 @@ Private Keys
 Open a new terminal window
 From the repo root run
 ```
-$ npm start
+npm start
 ```
 
-This should start the application on http://localhost:3000/
+This should start the application on http://localhost:3000/<br/>
 You can visit it in the browser if it didn't open on it's own.
 
 ### Login to the application
-At this point the local ganache-cli chain should be running, the ethererum-bridge for oraclize calls should be started, the contracts should be migrated to the local chain and the local application should be running on http://localhost:3000/
+At this point the local ganache-cli chain should be running, the ethererum-bridge for Oraclize calls should be started, the contracts should be migrated to the local chain and the local application should be running on http://localhost:3000/
 
 You should see "Insurance Dapp" as the title and "Login with Uport" in the upper right hand corner.
 
-Clicking "Login with Uport" will the give the Uport login options.
+Clicking "Login with Uport" will the give the uPort login options.
 
 Download and set up the uPort app on your device.
 
 On the Insurance Dapp page click "Continue with uPort."
 
-On your device use the QR code scanner from the uPort app to scan the QR code.
+On your device use the QR code scanner from the uPort app to scan the QR code.<br/>
 Insurance Dapp should appear as requesting information.
 
-Click continue on your device.
+Click "Continue" on your device.<br/>
 This should complete the login in the browser dapp.
 
-You should now see the Uport Name and Country you provided, along with the active account and balance of your current MetaMask account.
+You should now see the uPort Name and Country you provided, along with the active account and balance of your current MetaMask account.
 
 You should see the policy manager address in the registry contract.
 
@@ -209,14 +208,14 @@ This will transfer the funds from the policy to the policy holder.
 Run truffle test
 From repo root
 ```
-$ truffle test
+truffle test
 ```
 
 #### Explanation of test
 
 Policy.sol in policy.test.js
 
-The policy contract requires constructor values and is created in a factory fashion so we can't rely on the migration script or an existing deployed contract.  Before our test we create a new instance of the contract with correct constructor values capture it's address to use in all test.
+The policy contract requires constructor values and is created in a factory fashion so we can't rely on the migration script or an existing deployed contract.  Before our test we create a new instance of the contract with correct constructor values and capture it's address to use in all test.
 
 should accept funds:<br/>
 Written to verify the ability to send funds to the contract.  Verifies correct balances for a user and the policy contract when funds are sent to the contract and event is emitted.  
@@ -294,7 +293,7 @@ The uPort mobile app is used to login to the project and uPort information is di
 
 #### Project uses the Ethereum Name Service
 From within MetaMask switch to the main net since this is where ENS names are publicly available.<br/>
-Go to [http://jethrojones.eth/](http://jethrojones.eth/).<br/>
+Go to [http://jethrojones.eth/](http://jethrojones.eth/). (Must enter the full url)<br/>
 This should redirect to the app hosted at the IPFS hash above.<br/>
 The dapp won't load because it is not deployed on the main net.<br/>
 Switch to the Rinkeby network in MetaMask to load the dapp and refresh.
@@ -303,8 +302,8 @@ Switch to the Rinkeby network in MetaMask to load the dapp and refresh.
 The project uses the Oraclize oracle service to get the current timestamp.  This is used for policy purchases for the policy start time and submitting claims to verify a policy is valid.  The calls to oraclize can be seen in the ethereum bridge when running locally.
 
 #### Project uses an upgradable pattern.
-The project uses a Registry contract which holds the currently deploy address of the Policy Manager factory contract.  As part of the migration script the address for the deployed Policy Manager factory contract is captured and updated as the new backend contract in the Registry contract.  Subsequent migrations will keep the same Registry contract and deploy new versions of the factory contract and update the registry.  The current Policy Manager factory contract stored in the Registry is shown in the dapp.
+The project uses a registry contract which holds the currently deployed address of the Policy Manager factory contract.  As part of the migration script the address for the deployed Policy Manager factory contract is captured and updated as the new backend contract in the registry contract.  Subsequent migrations will keep the same registry contract and deploy new versions of the factory contract and update the registry.  The current Policy Manager factory contract stored in the registry is shown in the dapp.
 
 #### Testnet Deployment
-Dapp is deployed to the Rinkeby test net.  This can be seen by switching to the Rinkeby test net while using the front end either hosted locally or from IPFS.  Deployed addresses are listed in [deployed_addresses.txt](deployed_addresses.txt)
+Dapp is deployed to the Rinkeby test net.  This can be seen by switching to the Rinkeby test net while using the front end hosted on IPFS [https://ipfs.infura.io/ipfs/QmZhy2hpuR2653Kt3ny5vRnTt8mv4gLnFgqju7qLmCoUSL/](https://ipfs.infura.io/ipfs/QmZhy2hpuR2653Kt3ny5vRnTt8mv4gLnFgqju7qLmCoUSL/).  Deployed addresses are listed in [deployed_addresses.txt](deployed_addresses.txt)
 

@@ -1,4 +1,4 @@
-Steps taken to avoid common attacks
+Steps taken to avoid common attacks:
 
 ### Logic Bugs
 Used extensive code review, testing and unit test.
