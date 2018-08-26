@@ -1,3 +1,35 @@
+[Description](#description)
+[User Stories](#user-stories)
+[Setup](#setup)
+[Start the application](#start-the-application)
+[Login to the application](#login-to-the-application)
+[Owner Features](#owner-features)
+  [Emergency Stop](#emergency-stop)
+  [Add a policy manager](#add-a-policy-manager)
+[Policy Manager Features](#policy-manager-features)
+  [Add a policy](#add-a-policy)
+  [Approve/Deny a claim](#approvedeny-a-claim)
+[User Features](#user-features)
+  [Purchase a policy](#purchase-a-policy)
+  [Submit a claim](#submit-a-claim)
+  [Collect a claim](#collect-a-claim)
+[Testing](#testing)
+  [Explanation of test](#explanation-of-test)
+[Design Pattern Requirements](#design-pattern-requirements)
+[Security considerations](#security-considerations)
+[Library Contract](#library-contract)
+[Additional Requirements](#additional-requirements)
+[Stretch Goals](#stretch-goals)
+  [Project uses IPFS](#project-uses-ipfs)
+  [Project uses uPort](#project-uses-uport)
+  [Project uses the Ethereum Name Service](#project-uses-the-ethereum-name-service)
+  [Project uses an Oracle](#project-uses-an-oracle)
+  [Project uses an upgradable pattern](#project-uses-an-upgradable-pattern)
+  [Testnet Deployment](#testnet-deployment)
+
+
+
+
 ### Description
 An online insurance marketplace on the blockchain.
 
