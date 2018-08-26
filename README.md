@@ -127,7 +127,7 @@ Private Keys
 (8) c2d2b87c118e4cda25a537f95536a32f53b6395fc73441b8877b0890df525c96<br/>
 (9) c20d12fe4bc426165a5072d74650ff780cb68e2798a6a5d82df5b70c4a7a3ec3<br/>
 
-Open a new terminal window
+Open a new terminal window<br/>
 From the repo root run
 ```
 npm start
