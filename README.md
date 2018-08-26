@@ -1,31 +1,31 @@
-[Description](#description)<br/>
-[User Stories](#user-stories)<br/>
-[Setup](#setup)<br/>
-[Start the application](#start-the-application)<br/>
-[Login to the application](#login-to-the-application)<br/>
-[Owner Features](#owner-features)<br/>
-  [Emergency Stop](#emergency-stop)<br/>
-  [Add a policy manager](#add-a-policy-manager)<br/>
-[Policy Manager Features](#policy-manager-features)<br/>
-  [Add a policy](#add-a-policy)<br/>
-  [Approve/Deny a claim](#approvedeny-a-claim)<br/>
-[User Features](#user-features)<br/>
-  [Purchase a policy](#purchase-a-policy)<br/>
-  [Submit a claim](#submit-a-claim)<br/>
-  [Collect a claim](#collect-a-claim)<br/>
-[Testing](#testing)<br/>
-  [Explanation of test](#explanation-of-test)<br/>
-[Design Pattern Requirements](#design-pattern-requirements)<br/>
-[Security considerations](#security-considerations)<br/>
-[Library Contract](#library-contract)<br/>
-[Additional Requirements](#additional-requirements)<br/>
-[Stretch Goals](#stretch-goals)<br/>
-  [Project uses IPFS](#project-uses-ipfs)<br/>
-  [Project uses uPort](#project-uses-uport)<br/>
-  [Project uses the Ethereum Name Service](#project-uses-the-ethereum-name-service)<br/>
-  [Project uses an Oracle](#project-uses-an-oracle)<br/>
-  [Project uses an upgradable pattern](#project-uses-an-upgradable-pattern)<br/>
-  [Testnet Deployment](#testnet-deployment)<br/>
+* [Description](#description)
+* [User Stories](#user-stories)
+* [Setup](#setup)
+* [Start the application](#start-the-application)
+* [Login to the application](#login-to-the-application)
+* [Owner Features](#owner-features)
+  * [Emergency Stop](#emergency-stop)
+  * [Add a policy manager](#add-a-policy-manager)
+* [Policy Manager Features](#policy-manager-features)
+  * [Add a policy](#add-a-policy)
+  * [Approve/Deny a claim](#approvedeny-a-claim)
+* [User Features](#user-features)
+  * [Purchase a policy](#purchase-a-policy)
+  * [Submit a claim](#submit-a-claim)
+  * [Collect a claim](#collect-a-claim)
+* [Testing](#testing)
+  * [Explanation of test](#explanation-of-test)
+* [Design Pattern Requirements](#design-pattern-requirements)
+* [Security considerations](#security-considerations)
+* [Library Contract](#library-contract)
+* [Additional Requirements](#additional-requirements)
+* [Stretch Goals](#stretch-goals)
+  * [Project uses IPFS](#project-uses-ipfs)
+  * [Project uses uPort](#project-uses-uport)
+  * [Project uses the Ethereum Name Service](#project-uses-the-ethereum-name-service)
+  * [Project uses an Oracle](#project-uses-an-oracle)
+  * [Project uses an upgradable pattern](#project-uses-an-upgradable-pattern)
+  * [Testnet Deployment](#testnet-deployment)
 
 ### Description
 An online insurance marketplace on the blockchain.
