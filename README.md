@@ -61,6 +61,7 @@ Install Oraclize ethereum bridge
 
 On Ubuntu install python and build-essential
 ```
+sudo apt-get update
 sudo apt-get install python
 sudo apt-get install build-essential
 ```
