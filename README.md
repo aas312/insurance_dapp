@@ -46,6 +46,9 @@ A user opens the web app.  The web app reads the address and identifies the user
 
 ### Setup
 
+Make sure that you have node and npm installed.<br/>
+NodeJS 5.0+ recommended
+
 Install truffle:
 ```
 npm install -g truffle
@@ -54,7 +57,14 @@ Install ganache cli
 ```
 npm install -g ganache-cli
 ```
-Install oraclize ethereum bridge
+Install Oraclize ethereum bridge
+
+On Ubuntu install python and build-essential
+```
+sudo apt-get install python
+sudo apt-get install build-essential
+```
+
 ```
 npm install -g ethereum-bridge
 ```
